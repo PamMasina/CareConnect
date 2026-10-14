@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { SosAlert } from '../lib/types'
-import { AlertTriangle, MapPin, Phone } from 'lucide-react'
+import { MapPin, Phone } from 'lucide-react'
 
 export default function Emergency() {
   const { user } = useAuth()
@@ -53,24 +53,28 @@ export default function Emergency() {
       : null
     return (
       <div className="space-y-4">
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-5 space-y-2">
-          <h2 className="text-xl font-bold text-red-700 flex items-center gap-2">
-            <AlertTriangle /> Alert sent
-          </h2>
-          <p className="text-sm text-red-800">First responders have been notified. Stay calm and stay where you are.</p>
-          <p className="text-xs text-slate-500">Status: {alert.status}</p>
-          {maps && (
-            <a href={maps} target="_blank" rel="noreferrer" className="inline-block text-sm text-teal-700 underline">
-              View my location
-            </a>
-          )}
+        <div className="bg-white rounded-2xl shadow p-6 text-center space-y-4">
+        <div className="mx-auto w-24 h-24 rounded-full bg-emerald-50 flex items-center justify-center">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#1e8d2b" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <a href="tel:10177" className="block bg-white rounded-xl shadow p-4 flex items-center gap-3">
-          <Phone className="text-red-600" /> <span className="font-medium">Call ambulance (10177)</span>
-        </a>
+        <h2 className="text-lg font-bold">Emergency alert reported successfully!</h2>
+        <p className="text-sm text-slate-600">Your emergency will be attended shortly<br/>You will be contacted!</p>
+        <p className="text-sm text-slate-500">Please stay put as our dedicated team evaluates your case</p>
+        {maps && (
+          <a href={maps} target="_blank" rel="noreferrer" className="inline-block text-sm text-teal-700 underline">
+            View my location
+          </a>
+        )}
+        <button onClick={() => { setAlert(null) }} className="w-full bg-teal-700 text-white rounded-xl py-3 font-medium">
+          Continue to app
+        </button>
         <button onClick={cancel} className="w-full border border-slate-300 rounded-lg py-2.5 text-sm">
           I'm safe — cancel alert
         </button>
+      </div>
+      <a href="tel:10177" className="block bg-white rounded-xl shadow p-4 flex items-center gap-3">
+        <Phone className="text-red-600" /> <span className="font-medium">Call ambulance (10177)</span>
+      </a>
       </div>
     )
   }

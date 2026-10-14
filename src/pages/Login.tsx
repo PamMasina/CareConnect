@@ -23,21 +23,30 @@ export default function Login() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-10">
+    <div className="max-w-sm mx-auto mt-10 space-y-4">
+      <div className="bg-teal-600 rounded-2xl p-6 text-white">
+        <h1 className="text-2xl font-bold">CareConnect</h1>
+        <p className="text-sm opacity-80">Connecting Patients With Healthcare</p>
+      </div>
       <div className="bg-white rounded-2xl shadow p-6 space-y-4">
-        <h1 className="text-2xl font-bold text-teal-700 text-center">CareConnect</h1>
-        <p className="text-sm text-slate-500 text-center">Sign in to your account</p>
+        <p className="text-sm text-slate-500">Sign in to your account</p>
         <form onSubmit={submit} className="space-y-3">
-          <input
-            type="email" required placeholder="Email" value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
-          />
-          <input
-            type="password" required placeholder="Password" value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
-          />
+          <div>
+            <label className="text-xs font-medium text-slate-600 uppercase">Email</label>
+            <input
+              type="email" required placeholder="you@example.com" value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="mt-1 w-full bg-slate-50 border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-slate-600 uppercase">Password</label>
+            <input
+              type="password" required placeholder="Password" value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="mt-1 w-full bg-slate-50 border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button
             type="submit" disabled={loading}
