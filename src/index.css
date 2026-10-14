@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  /* Primary brand: deep blue #2A5C82; accent teal #4DB6AC */
+  --color-teal-50: #edf3f9;
+  --color-teal-100: #d4e2ef;
+  --color-teal-200: #a9c5df;
+  --color-teal-300: #7ea8cf;
+  --color-teal-400: #538bbf;
+  --color-teal-500: #2A5C82;
+  --color-teal-600: #2A5C82;
+  --color-teal-700: #234e6e;
+  --color-teal-800: #1c3f57;
+  --color-teal-900: #142f40;
+
+  --color-emerald-500: #4DB6AC;
+  --color-emerald-600: #4DB6AC;
+  --color-emerald-700: #3d9e95;
+
+  /* Neutrals: canvas #F8FAFC, ink #334155 */
+  --color-slate-50: #F8FAFC;
+  --color-slate-100: #eef2f7;
+  --color-slate-200: #dde5ee;
+  --color-slate-300: #c4ced9;
+  --color-slate-400: #8a96a8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #4b5a6e;
+  --color-slate-700: #334155;
+  --color-slate-800: #243044;
+  --color-slate-900: #1a2535;
+}
+
+:root {
+  --brand: #2A5C82;
+  --brand-dark: #234e6e;
+  --accent: #4DB6AC;
+  --danger: #dc2626;
+  --canvas: #F8FAFC;
+  --ink: #334155;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: #F8FAFC;
+  color: #334155;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Mobile-friendly tap targets */
+button, a { touch-action: manipulation; }
+
+/* SOS pulse animation */
+@keyframes sos-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+  70% { box-shadow: 0 0 0 30px rgba(220, 38, 38, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+.sos-pulse { animation: sos-pulse 1.5s infinite; }
+><|end|><|start|>Assistant to=bash<|channel|>analysis <|constrain|>xml<|message|><rfl:parameter name="command">
+cat > "C:/Users/Andile.Masina/cape-town-clinic/.env.example" << 'EOF'
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+EOF
+echo done
