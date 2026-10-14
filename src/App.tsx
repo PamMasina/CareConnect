@@ -6,6 +6,8 @@ import Signup from './pages/Signup'
 import Home from './pages/Home'
 import BookAppointment from './pages/BookAppointment'
 import Clinics from './pages/Clinics'
+import HealthTips from './pages/HealthTips'
+import Alerts from './pages/Alerts'
 import MyAppointments from './pages/MyAppointments'
 import QueueStatus from './pages/QueueStatus'
 import Emergency from './pages/Emergency'
@@ -52,7 +54,9 @@ function AppRoutes() {
         <Route path="/profile" element={<Profile />} />
 
         {/* Patient */}
-        <Route path="/clinics" element={<ProtectedRoute roles={['patient']}><Clinics /></ProtectedRoute>} />
+        <Route path="/clinics" element={<ProtectedRoute><Clinics /></ProtectedRoute>} />
+        <Route path="/health-tips" element={<ProtectedRoute><HealthTips /></ProtectedRoute>} />
+        <Route path="/alerts" element={<ProtectedRoute><Alerts /></ProtectedRoute>} />
         <Route path="/appointments" element={<ProtectedRoute roles={['patient']}><BookAppointment /></ProtectedRoute>} />
         <Route path="/my-appointments" element={<ProtectedRoute roles={['patient']}><MyAppointments /></ProtectedRoute>} />
         <Route path="/queue" element={<ProtectedRoute roles={['patient']}><QueueStatus /></ProtectedRoute>} />

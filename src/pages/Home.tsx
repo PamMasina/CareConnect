@@ -89,8 +89,8 @@ export default function Home() {
         <div className="grid grid-cols-2 gap-3">
           <QuickAction to="/clinics" icon={<BookOpen size={22} />} label="Make a Booking" />
           <QuickAction to="/clinics" icon={<MapPin size={22} />} label="Nearby Clinics" />
-          <QuickAction to="/" icon={<HeartPulse size={22} />} label="Health Tips" />
-          <QuickAction to="/" icon={<Bell size={22} />} label="Alerts" badge={5} />
+          <QuickAction to="/health-tips" icon={<HeartPulse size={22} />} label="Health Tips" />
+          <QuickAction to="/alerts" icon={<Bell size={22} />} label="Alerts" badge={5} />
         </div>
 
         <Link to="/emergency" className="block bg-red-600 text-white rounded-2xl p-4 text-center font-bold shadow-lg sos-pulse">
