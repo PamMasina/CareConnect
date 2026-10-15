@@ -11,12 +11,17 @@ import {
   LogOut,
   CalendarCheck,
   Edit3,
+  MapPin,
+  HeartHandshake,
 } from 'lucide-react'
 
 export default function Profile() {
   const { profile, user, role, signOut } = useAuth()
   const navigate = useNavigate()
   const clinic = (user as any)?.user_metadata?.clinic || profile?.clinic || 'Langa CHC'
+  const meta = (user as any)?.user_metadata || {}
+  const address = meta.address || {}
+  const nok = meta.next_of_kin || {}
 
   const initials = (profile?.full_name || 'Care Member')
     .split(' ')
@@ -72,6 +77,49 @@ export default function Profile() {
               <span className="text-[10px] text-slate-400 font-semibold uppercase block">Contact Phone</span>
               <span className="font-medium text-slate-800">{profile?.phone || '+27 71 234 5678'}</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Personal Details */}
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-4">
+        <h2 className="font-bold text-base text-slate-900">Saved Profile Details</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+            <span className="text-[10px] text-slate-400 font-semibold uppercase block">Full Name</span>
+            <span className="font-medium text-slate-800">{profile?.full_name || 'Not provided'}</span>
+          </div>
+          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+            <span className="text-[10px] text-slate-400 font-semibold uppercase block">Phone Number</span>
+            <span className="font-medium text-slate-800">{profile?.phone || 'Not provided'}</span>
+          </div>
+        </div>
+
+        <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+          <MapPin size={16} className="text-slate-400 shrink-0 mt-0.5" />
+          <div>
+            <span className="text-[10px] text-slate-400 font-semibold uppercase block">Residential Address</span>
+            <span className="font-medium text-slate-800">
+              {[address.streetNo, address.streetName].filter(Boolean).join(' ') || 'Not provided'}
+            </span>
+            {(address.suburb || address.city) && (
+              <p className="text-xs text-slate-600 mt-0.5">
+                {[address.suburb, address.city].filter(Boolean).join(', ')}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+          <HeartHandshake size={16} className="text-slate-400 shrink-0 mt-0.5" />
+          <div>
+            <span className="text-[10px] text-slate-400 font-semibold uppercase block">Next of Kin</span>
+            <span className="font-medium text-slate-800">{nok.name || 'Not provided'}</span>
+            {(nok.relationship || nok.phone) && (
+              <p className="text-xs text-slate-600 mt-0.5">
+                {[nok.relationship, nok.phone].filter(Boolean).join(' · ')}
+              </p>
+            )}
           </div>
         </div>
       </div>

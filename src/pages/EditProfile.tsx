@@ -75,8 +75,7 @@ export default function EditProfile() {
     }
     await supabase.auth.refreshSession()
     await refreshProfile()
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+    navigate('/profile')
   }
 
   const clinicNames = Array.from(new Set(CLINICS.map(c => c.name)))
