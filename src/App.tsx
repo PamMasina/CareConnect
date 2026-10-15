@@ -54,29 +54,31 @@ function AppRoutes() {
       <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
       <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
 
-      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+      {/* Main Layout is open to all visitors with tailored content */}
+      <Route element={<Layout />}>
+        {/* Publicly browseable pages */}
         <Route path="/" element={<Home />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/medical-record" element={<MedicalRecord />} />
+        <Route path="/clinics" element={<Clinics />} />
+        <Route path="/health-tips" element={<HealthTips />} />
+        <Route path="/alerts" element={<Alerts />} />
+        <Route path="/emergency" element={<Emergency />} />
+        <Route path="/queue" element={<QueueStatus />} />
 
-        {/* Patient */}
-        <Route path="/clinics" element={<ProtectedRoute><Clinics /></ProtectedRoute>} />
-        <Route path="/health-tips" element={<ProtectedRoute><HealthTips /></ProtectedRoute>} />
-        <Route path="/alerts" element={<ProtectedRoute><Alerts /></ProtectedRoute>} />
-        <Route path="/appointments" element={<ProtectedRoute roles={['patient']}><BookAppointment /></ProtectedRoute>} />
-        <Route path="/my-appointments" element={<ProtectedRoute roles={['patient']}><MyAppointments /></ProtectedRoute>} />
-        <Route path="/queue" element={<ProtectedRoute roles={['patient']}><QueueStatus /></ProtectedRoute>} />
-        <Route path="/emergency" element={<ProtectedRoute roles={['patient']}><Emergency /></ProtectedRoute>} />
+        {/* Protected Patient routes */}
+        <Route path="/appointments" element={<ProtectedRoute roles={['patient', 'admin']}><BookAppointment /></ProtectedRoute>} />
+        <Route path="/my-appointments" element={<ProtectedRoute roles={['patient', 'admin']}><MyAppointments /></ProtectedRoute>} />
+        <Route path="/medical-record" element={<ProtectedRoute><MedicalRecord /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
 
-        {/* Staff */}
-        <Route path="/staff" element={<ProtectedRoute roles={['doctor','nurse','admin']}><StaffConsole /></ProtectedRoute>} />
+        {/* Protected Clinical Staff routes */}
+        <Route path="/staff" element={<ProtectedRoute roles={['doctor', 'nurse', 'admin']}><StaffConsole /></ProtectedRoute>} />
 
-        {/* First responders + staff view SOS */}
-        <Route path="/sos-inbox" element={<ProtectedRoute roles={['first_responder','admin','nurse','doctor']}><FirstResponderInbox /></ProtectedRoute>} />
+        {/* Protected First Responder & Staff SOS Inbox */}
+        <Route path="/sos-inbox" element={<ProtectedRoute roles={['first_responder', 'admin', 'nurse', 'doctor']}><FirstResponderInbox /></ProtectedRoute>} />
 
-        {/* Admin */}
+        {/* Protected Admin Console */}
         <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
       </Route>
 

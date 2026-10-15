@@ -1,105 +1,171 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { MapPin, Clock, Search, Filter, ArrowLeft, CalendarPlus } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import {
+  MapPin,
+  Clock,
+  Search,
+  Phone,
+  Building2,
+  CalendarPlus,
+  Filter,
+} from 'lucide-react'
 import { CLINICS, type Clinic } from '../lib/clinics'
 
+function toMinutes(hhmm: string) {
+  const [h, m] = hhmm.split(':').map(Number)
+  return h * 60 + m
+}
 
-
-function toMinutes(hhmm: string) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m }
 function statusFor(c: Clinic, now = new Date()) {
   const day = now.getDay()
   const mins = now.getHours() * 60 + now.getMinutes()
-  if (!c.days.includes(day)) return { open: false, label: `Closed · opens ${c.openTime}` }
-  if (mins < toMinutes(c.openTime)) return { open: false, label: `Closed · opens ${c.openTime}` }
-  if (mins >= toMinutes(c.closeTime)) return { open: false, label: `Closed · ${c.openTime}–${c.closeTime}` }
-  return { open: true, label: `Open · closes ${c.closeTime}` }
+  if (!c.days.includes(day)) return { open: false, label: `Closed · Opens ${c.openTime}` }
+  if (mins < toMinutes(c.openTime)) return { open: false, label: `Closed · Opens ${c.openTime}` }
+  if (mins >= toMinutes(c.closeTime)) return { open: false, label: `Closed · Closes ${c.closeTime}` }
+  return { open: true, label: `Open · Closes ${c.closeTime}` }
 }
 
-const FILTERS = ['All', 'Open now', '< 5 km', 'antenatal']
+const FILTERS = ['All', 'Open now', '< 5 km', 'Langa', 'Khayelitsha', 'Mitchells Plain', 'CBD']
 
 export default function Clinics() {
-  const navigate = useNavigate()
   const [now] = useState(() => new Date())
   const [filter, setFilter] = useState('All')
   const [query, setQuery] = useState('')
 
-  const filtered = CLINICS.filter(c => {
-    const s = statusFor(c, now)
-    if (filter === 'Open now' && !s.open) return false
-    if (filter === '< 5 km' && parseFloat(c.distance) >= 5) return false
-    if (query && !`${c.name} ${c.suburb} ${c.address}`.toLowerCase().includes(query.toLowerCase())) return false
-    return true
-  })
+  const filtered = useMemo(() => {
+    return CLINICS.filter(c => {
+      const s = statusFor(c, now)
+      if (filter === 'Open now' && !s.open) return false
+      if (filter === '< 5 km' && parseFloat(c.distance) >= 5) return false
+      if (filter === 'Langa' && c.suburb !== 'Langa') return false
+      if (filter === 'Khayelitsha' && c.suburb !== 'Khayelitsha') return false
+      if (filter === 'Mitchells Plain' && c.suburb !== 'Mitchells Plain') return false
+      if (filter === 'CBD' && !c.suburb.includes('CBD')) return false
+
+      if (query && !`${c.name} ${c.suburb} ${c.address}`.toLowerCase().includes(query.toLowerCase())) {
+        return false
+      }
+      return true
+    })
+  }, [filter, query, now])
 
   return (
-    <div className="-mx-4 -mt-4">
-      {/* Hero header */}
-      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 pt-6 pb-8 rounded-b-3xl shadow-lg">
-        <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => navigate(-1)} className="p-1"><ArrowLeft size={20} /></button>
-          <h1 className="text-xl font-bold flex-1">Nearby Clinics</h1>
-          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-semibold">AS</div>
+    <div className="space-y-6">
+      {/* Directory Header */}
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-xs text-teal-700 font-medium mb-1">
+            <Building2 size={14} />
+            <span>Western Cape Health Facilities</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            Cape Town Clinic Directory
+          </h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Discover community day centres, operational hours, contact details, and book consultations
+          </p>
         </div>
-        <p className="text-sm opacity-80">Cape Town, Western Cape</p>
+
+        <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl font-medium">
+          Showing <span className="font-bold text-slate-900 tabular-nums">{filtered.length}</span> facilities
+        </div>
       </div>
 
-      <div className="px-4 -mt-4 space-y-4">
-        {/* Search */}
-        <div className="bg-white rounded-2xl shadow flex items-center gap-2 px-4 py-2.5">
-          <Search size={16} className="text-slate-400" />
-          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search clinics by name or area..." className="flex-1 outline-none text-sm" />
+      {/* Search and Filters Bar */}
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-4 shadow-xs space-y-3">
+        <div className="relative">
+          <Search size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
+          <input
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="Search clinics by name, suburb, or street address..."
+            className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 transition-all"
+          />
         </div>
 
-        {/* Filter chips */}
-        <div className="flex gap-2 overflow-x-auto">
+        <div className="flex flex-wrap items-center gap-1.5 pb-1 text-xs">
+          <Filter size={13} className="text-slate-400 shrink-0 ml-1" />
           {FILTERS.map(f => (
-            <button key={f} onClick={() => setFilter(f)}
-              className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium ${filter === f ? 'bg-teal-600 text-white' : 'bg-white text-slate-600 shadow'}`}>
-              {filter !== 'All' && f === filter ? <Filter size={12} className="inline mr-1" /> : null}{f}
+            <button
+              key={f}
+              type="button"
+              onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap transition-colors ${
+                filter === f
+                  ? 'bg-teal-600 text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              {f}
             </button>
           ))}
-          <span className="ml-auto text-xs text-slate-400 self-center">CLINICS NEARBY YOU ({filtered.length})</span>
         </div>
+      </div>
 
-        {/* Map placeholder */}
-        <div className="bg-slate-200 rounded-2xl h-40 flex items-center justify-center text-slate-500 text-sm">Map view</div>
+      {/* Clinics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filtered.map(clinic => {
+          const status = statusFor(clinic, now)
+          return (
+            <div
+              key={clinic.id}
+              className="bg-white rounded-3xl border border-slate-200/80 p-5 hover:border-slate-300 hover:shadow-xs transition-all flex flex-col justify-between space-y-4"
+            >
+              <div>
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <h2 className="font-bold text-base text-slate-900">{clinic.name}</h2>
+                  <span className="font-mono text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
+                    {clinic.distance}
+                  </span>
+                </div>
 
-        {/* Clinic list */}
-        <div className="bg-white rounded-2xl shadow divide-y divide-slate-100">
-          {filtered.map(c => {
-            const s = statusFor(c, now)
-            return (
-              <div key={c.id} className="p-4 space-y-1">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-semibold text-sm">{c.name}</p>
-                    <p className="text-xs text-slate-500 flex items-center gap-1">
-                      <MapPin size={12} /> {c.address} · {c.suburb}
-                    </p>
+                <div className="space-y-1.5 text-xs text-slate-500">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin size={13} className="text-slate-400 shrink-0" />
+                    <span>{clinic.address}, {clinic.suburb}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${s.open ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
-                      {s.open ? 'Open' : 'Closed'}
+
+                  <div className="flex items-center gap-1.5">
+                    <Clock size={13} className="text-slate-400 shrink-0" />
+                    <span className="tabular-nums">
+                      {clinic.openTime} – {clinic.closeTime}
                     </span>
-                    <span className="text-xs text-slate-400">{c.distance}</span>
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 flex items-center gap-1">
-                  <Clock size={12} /> {c.openTime} – {c.closeTime} ({c.days.includes(6) ? 'Mon-Sat' : 'Mon-Fri'})
-                </p>
-                <p className="text-xs text-slate-400">{s.label}</p>
-                <button
-                  onClick={() => navigate('/appointments', { state: { clinic: { id: c.id, name: c.name, address: c.address, suburb: c.suburb } } })}
-                  disabled={!s.open}
-                  className="mt-2 w-full bg-teal-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  <CalendarPlus size={14} /> {s.open ? 'Book here' : 'Closed now'}
-                </button>
+
+                <div className="mt-3">
+                  <span
+                    className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${
+                      status.open
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        : 'bg-slate-100 text-slate-600 border-slate-200'
+                    }`}
+                  >
+                    {status.label}
+                  </span>
+                </div>
               </div>
-            )
-          })}
-          {filtered.length === 0 && <p className="p-4 text-sm text-slate-500 text-center">No clinics match.</p>}
-        </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                <a
+                  href={`tel:${clinic.phone.replace(/\s+/g, '')}`}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                >
+                  <Phone size={13} className="text-teal-700" />
+                  <span>Call Clinic</span>
+                </a>
+
+                <Link
+                  to="/appointments"
+                  className="px-3.5 py-1.5 rounded-xl bg-teal-600 text-white hover:bg-teal-700 text-xs font-semibold flex items-center gap-1 transition-colors shadow-xs"
+                >
+                  <CalendarPlus size={13} />
+                  <span>Book Visit</span>
+                </Link>
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

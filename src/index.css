@@ -1,65 +1,49 @@
 @import "tailwindcss";
 
-@theme {
-  /* New palette: sage #769471, cream #FDF8F2, tan #B08968, ink #2D3A2B, mist #F4F7F6 */
-  --color-teal-50: #F4F7F6;
-  --color-teal-100: #EAF0EA;
-  --color-teal-200: #D2E0D0;
-  --color-teal-300: #B2CAB0;
-  --color-teal-400: #94AF92;
-  --color-teal-500: #769471;
-  --color-teal-600: #769471;
-  --color-teal-700: #607A5C;
-  --color-teal-800: #4A6047;
-  --color-teal-900: #354733;
-
-  --color-emerald-500: #B08968;
-  --color-emerald-600: #B08968;
-  --color-emerald-700: #967454;
-
-  /* Neutrals mapped to new palette */
-  --color-slate-50: #FDF8F2;
-  --color-slate-100: #F4F7F6;
-  --color-slate-200: #EAEFEA;
-  --color-slate-300: #D6DFD6;
-  --color-slate-400: #B08968;
-  --color-slate-500: #7A8378;
-  --color-slate-600: #5D685C;
-  --color-slate-700: #2D3A2B;
-  --color-slate-800: #243023;
-  --color-slate-900: #1A231A;
+:root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-:root {
-  --brand: #769471;
-  --brand-dark: #607A5C;
-  --accent: #B08968;
-  --danger: #C63231;
-  --canvas: #FDF8F2;
-  --ink: #2D3A2B;
+html, body, #root {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background: #FDF8F2;
-  color: #2D3A2B;
+  font-family: var(--font-sans);
+  background-color: #F8FAFC;
+  color: #0F172A;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Mobile-friendly tap targets */
-button, a { touch-action: manipulation; }
+/* Tabular figures for data, times, queue numbers */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
 
-/* SOS pulse animation */
-@keyframes sos-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
-  70% { box-shadow: 0 0 0 30px rgba(220, 38, 38, 0); }
+/* Touch targets */
+button, a {
+  touch-action: manipulation;
+}
+
+/* Smooth micro-transitions */
+.btn-press {
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease;
+}
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+/* Controlled SOS pulse animation */
+@keyframes sos-pulse-clean {
+  0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.45); }
+  70% { box-shadow: 0 0 0 16px rgba(220, 38, 38, 0); }
   100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
 }
-.sos-pulse { animation: sos-pulse 1.5s infinite; }
-><|end|><|start|>Assistant to=bash<|channel|>analysis <|constrain|>xml<|message|><rfl:parameter name="command">
-cat > "C:/Users/Andile.Masina/cape-town-clinic/.env.example" << 'EOF'
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-EOF
-echo done
+
+.sos-pulse {
+  animation: sos-pulse-clean 2s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}

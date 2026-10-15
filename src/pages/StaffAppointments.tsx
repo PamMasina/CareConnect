@@ -2,13 +2,21 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Appointment } from '../lib/types'
+import { Calendar, Clock, User, Save, RotateCw, CheckCircle2 } from 'lucide-react'
 
-const STATUSES: Appointment['status'][] = ['booked','checked_in','in_progress','completed','no_show','cancelled']
+const STATUSES: Appointment['status'][] = [
+  'booked',
+  'checked_in',
+  'in_progress',
+  'completed',
+  'no_show',
+  'cancelled',
+]
 
 export default function StaffAppointments() {
   const { user } = useAuth()
   const clinic = (user as any)?.user_metadata?.clinic
-  const [date, setDate] = useState(new Date().toISOString().slice(0,10))
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [items, setItems] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [notesDraft, setNotesDraft] = useState<Record<string, string>>({})
@@ -18,9 +26,13 @@ export default function StaffAppointments() {
     setLoading(true)
     const start = new Date(date + 'T00:00:00').toISOString()
     const end = new Date(date + 'T23:59:59').toISOString()
-    const { data } = await supabase.from('appointments')
-      .select('*, service:services(*), patient:profiles!appointments_patient_id_fkey(*), doctor:profiles!appointments_doctor_id_fkey(*)')
-      .gte('scheduled_at', start).lte('scheduled_at', end)
+    const { data } = await supabase
+      .from('appointments')
+      .select(
+        '*, service:services(*), patient:profiles!appointments_patient_id_fkey(*), doctor:profiles!appointments_doctor_id_fkey(*)',
+      )
+      .gte('scheduled_at', start)
+      .lte('scheduled_at', end)
       .order('scheduled_at')
     let rows = (data as any) ?? []
     if (clinic) rows = rows.filter((a: any) => !a.notes || a.notes.includes(clinic))
@@ -28,14 +40,19 @@ export default function StaffAppointments() {
     setLoading(false)
   }
 
-  useEffect(() => { load() }, [date, clinic])
+  useEffect(() => {
+    load()
+  }, [date, clinic])
 
   const updateStatus = async (id: string, status: Appointment['status']) => {
     await supabase.from('appointments').update({ status }).eq('id', id)
-    // keep queue in sync
     if (status === 'checked_in') {
       const appt = items.find(a => a.id === id)
-      if (appt) await supabase.from('queue_entries').insert({ appointment_id: id, patient_id: appt.patient_id, status: 'waiting' })
+      if (appt) {
+        await supabase
+          .from('queue_entries')
+          .insert({ appointment_id: id, patient_id: appt.patient_id, status: 'waiting', position: 1 })
+      }
     }
     if (status === 'completed' || status === 'no_show' || status === 'cancelled') {
       await supabase.from('queue_entries').update({ status: 'done' }).eq('appointment_id', id)
@@ -45,60 +62,142 @@ export default function StaffAppointments() {
 
   const saveNotes = async (id: string) => {
     setSavingId(id)
-    await supabase.from('appointments').update({ notes: notesDraft[id] ?? '' }).eq('id', id)
+    await supabase
+      .from('appointments')
+      .update({ notes: notesDraft[id] ?? '' })
+      .eq('id', id)
     setSavingId(null)
     load()
   }
 
-  const statusColor: Record<string,string> = {
-    booked: 'bg-blue-100 text-blue-700',
-    checked_in: 'bg-amber-100 text-amber-700',
-    in_progress: 'bg-purple-100 text-purple-700',
-    completed: 'bg-green-100 text-green-700',
-    cancelled: 'bg-slate-100 text-slate-500',
-    no_show: 'bg-red-100 text-red-700',
+  const statusStyles: Record<string, string> = {
+    booked: 'bg-teal-50 text-teal-800 border-teal-200',
+    checked_in: 'bg-amber-50 text-amber-800 border-amber-200',
+    in_progress: 'bg-purple-50 text-purple-800 border-purple-200',
+    completed: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+    cancelled: 'bg-slate-100 text-slate-500 border-slate-200',
+    no_show: 'bg-red-50 text-red-700 border-red-200',
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Appointments</h1>
-        <input type="date" value={date} onChange={e => setDate(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-sm" />
+      {/* Date Filter Bar */}
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-bold text-slate-900">Patient Appointments Schedule</h2>
+          <p className="text-xs text-slate-500">
+            Caseload roster for <span className="font-semibold text-slate-800">{date}</span> · {items.length} scheduled visits
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="date"
+            value={date}
+            onChange={e => setDate(e.target.value)}
+            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+          />
+          <button
+            onClick={load}
+            disabled={loading}
+            className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+          >
+            <RotateCw size={13} className={loading ? 'animate-spin' : ''} />
+          </button>
+        </div>
       </div>
-      {loading && <p className="text-slate-500">Loading…</p>}
+
+      {loading && (
+        <div className="p-8 text-center text-slate-500 bg-white rounded-3xl border border-slate-200">
+          <p className="text-xs">Loading clinical consultations…</p>
+        </div>
+      )}
+
+      {/* Appointment Cards */}
       <div className="space-y-3">
-        {items.map(a => (
-          <div key={a.id} className="bg-white rounded-2xl shadow p-4 space-y-2">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="font-semibold">{a.patient?.full_name ?? 'Patient'}</h3>
-                <p className="text-sm text-slate-500">{a.service?.name} · {new Date(a.scheduled_at).toLocaleTimeString()}</p>
-                {a.doctor && <p className="text-xs text-slate-400">Dr {a.doctor.full_name}</p>}
+        {items.map(a => {
+          const apptDate = new Date(a.scheduled_at)
+          return (
+            <div
+              key={a.id}
+              className="p-5 rounded-3xl bg-white border border-slate-200/80 hover:border-slate-300 transition-all shadow-xs space-y-3"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-base text-slate-900">
+                      {a.patient?.full_name ?? 'Walk-in Patient'}
+                    </h3>
+                    <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${statusStyles[a.status] || 'bg-slate-100 text-slate-700'}`}>
+                      {a.status.replace('_', ' ')}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-500 mt-1">
+                    <span className="font-medium text-slate-700">{a.service?.name || 'General Consultation'}</span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1 font-mono text-slate-700 tabular-nums">
+                      <Clock size={12} className="text-teal-600" />
+                      <span>{apptDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </span>
+                    {a.doctor && (
+                      <>
+                        <span>·</span>
+                        <span>Attending: Dr. {a.doctor.full_name}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Status Switcher Dropdown */}
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-semibold text-slate-400">Update:</span>
+                  <select
+                    value={a.status}
+                    onChange={e => updateStatus(a.id, e.target.value as any)}
+                    className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+                  >
+                    {STATUSES.map(s => (
+                      <option key={s} value={s}>
+                        {s.replace('_', ' ')}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <span className={`text-xs px-2 py-1 rounded-full ${statusColor[a.status]}`}>{a.status.replace('_',' ')}</span>
+
+              {/* Clinical Notes Section */}
+              <div className="pt-2 border-t border-slate-100 space-y-2">
+                <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block">
+                  Diagnostic & Encounter Notes
+                </label>
+                <textarea
+                  value={notesDraft[a.id] ?? a.notes ?? ''}
+                  onChange={e => setNotesDraft({ ...notesDraft, [a.id]: e.target.value })}
+                  rows={2}
+                  placeholder="Record patient observations, blood pressure, prescription or treatment plan..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+                />
+                <button
+                  type="button"
+                  onClick={() => saveNotes(a.id)}
+                  disabled={savingId === a.id}
+                  className="px-3 py-1.5 rounded-lg bg-teal-600 text-white font-semibold text-xs hover:bg-teal-700 disabled:opacity-60 transition-colors flex items-center gap-1.5"
+                >
+                  <Save size={13} />
+                  <span>{savingId === a.id ? 'Saving…' : 'Save Clinical Notes'}</span>
+                </button>
+              </div>
             </div>
-            <select value={a.status} onChange={e => updateStatus(a.id, e.target.value as any)}
-              className="w-full border rounded-lg px-3 py-2 text-sm">
-              {STATUSES.map(s => <option key={s} value={s}>{s.replace('_',' ')}</option>)}
-            </select>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-600">Medical record notes</label>
-              <textarea
-                value={notesDraft[a.id] ?? a.notes ?? ''}
-                onChange={e => setNotesDraft(d => ({ ...d, [a.id]: e.target.value }))}
-                rows={2}
-                placeholder="Diagnostic notes, allergies context, medication..."
-                className="w-full border rounded-lg px-3 py-2 text-sm" />
-              <button onClick={() => saveNotes(a.id)} disabled={savingId === a.id}
-                className="text-xs bg-teal-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-60">
-                {savingId === a.id ? 'Saving…' : 'Save notes'}
-              </button>
-            </div>
-          </div>
-        ))}
+          )
+        })}
+
         {items.length === 0 && !loading && (
-          <div className="bg-white rounded-2xl shadow p-6 text-center text-slate-500">No appointments on this day.</div>
+          <div className="p-8 text-center bg-white rounded-3xl border border-slate-200/80 shadow-xs space-y-2">
+            <Calendar size={32} className="mx-auto text-slate-300" />
+            <h3 className="font-bold text-sm text-slate-800">No Consultations Scheduled</h3>
+            <p className="text-xs text-slate-500">There are no appointments logged for {date}.</p>
+          </div>
         )}
       </div>
     </div>
