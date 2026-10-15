@@ -6,7 +6,7 @@ import { CLINICS } from '../lib/clinics'
 import { ArrowLeft, Save, CheckCircle2, User, Building2, MapPin, HeartHandshake } from 'lucide-react'
 
 export default function EditProfile() {
-  const { profile, user, refreshProfile } = useAuth()
+  const { profile, user, refreshProfile, role } = useAuth()
   const navigate = useNavigate()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -32,6 +32,19 @@ export default function EditProfile() {
     setEmail(user?.email || '')
     setPhone(profile?.phone || '')
     setClinic((user as any)?.user_metadata?.clinic || profile?.clinic || 'Langa CHC')
+    const addr = (user as any)?.user_metadata?.address
+    if (addr) {
+      setStreetNo(addr.streetNo || streetNo)
+      setStreetName(addr.streetName || streetName)
+      setSuburb(addr.suburb || suburb)
+      setCity(addr.city || city)
+    }
+    const nok = (user as any)?.user_metadata?.next_of_kin
+    if (nok) {
+      setNokName(nok.name || nokName)
+      setNokRelation(nok.relationship || nokRelation)
+      setNokContact(nok.phone || nokContact)
+    }
   }, [profile, user])
 
   const save = async (e: React.FormEvent) => {
@@ -43,7 +56,13 @@ export default function EditProfile() {
       return
     }
     setSaving(true)
-    const { error: metaErr } = await supabase.auth.updateUser({ data: { clinic } })
+    const { error: metaErr } = await supabase.auth.updateUser({
+      data: {
+        clinic,
+        address: { streetNo, streetName, suburb, city },
+        next_of_kin: { name: nokName, relationship: nokRelation, phone: nokContact },
+      },
+    })
     if (metaErr) console.error('metadata update error:', metaErr.message)
     const { error: err } = await supabase
       .from('profiles')
@@ -151,33 +170,35 @@ export default function EditProfile() {
           </div>
         </section>
 
-        {/* Primary Facility Selection */}
-        <section className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-            <Building2 size={18} className="text-teal-600" />
-            <h2 className="font-bold text-base text-slate-900">Assigned Primary Healthcare Facility</h2>
-          </div>
+        {/* Primary Facility Selection (staff only) */}
+        {role !== 'patient' && (
+          <section className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+              <Building2 size={18} className="text-teal-600" />
+              <h2 className="font-bold text-base text-slate-900">Assigned Primary Healthcare Facility</h2>
+            </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              Default Clinic or Community Health Centre
-            </label>
-            <select
-              value={clinic}
-              onChange={e => setClinic(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
-            >
-              {clinicNames.map(name => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-            <p className="text-[11px] text-slate-400 mt-1.5">
-              Your preferred clinic for routine chronic medication collection and consultation queues.
-            </p>
-          </div>
-        </section>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Default Clinic or Community Health Centre
+              </label>
+              <select
+                value={clinic}
+                onChange={e => setClinic(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+              >
+                {clinicNames.map(name => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[11px] text-slate-400 mt-1.5">
+                Your preferred clinic for routine chronic medication collection and consultation queues.
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* Residential Address */}
         <section className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-4">
