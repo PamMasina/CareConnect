@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { LogIn, Activity, ShieldCheck, Clock, MapPin, CheckCircle2, AlertCircle } from 'lucide-react'
 
 // Image asset generated for healthcare consultation
-const consultationImg = '/src/assets/images/medical_consultation_1792062791299.jpg'
+import consultationImg from '../assets/images/medical_consultation_1792062791299.jpg'
 
 export default function Login() {
   const { signIn } = useAuth()

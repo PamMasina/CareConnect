@@ -26,9 +26,9 @@ import {
 } from 'lucide-react'
 
 // High-fidelity image assets
-const clinicFacilityImg = '/src/assets/images/clinic_modern_facility_1792063765730.jpg'
-const doctorPortraitImg = '/src/assets/images/digital_health_doctor_1792063765070.jpg'
-const receptionImg = '/src/assets/images/hero_cape_health_1792062792706.jpg'
+import clinicFacilityImg from '../assets/images/clinic_modern_facility_1792063765730.jpg'
+import doctorPortraitImg from '../assets/images/digital_health_doctor_1792063765070.jpg'
+import receptionImg from '../assets/images/hero_cape_health_1792062792706.jpg'
 
 export default function Home() {
   const { session, profile, user } = useAuth()

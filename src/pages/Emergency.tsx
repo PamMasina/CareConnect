@@ -5,7 +5,7 @@ import type { SosAlert } from '../lib/types'
 import { MapPin, Phone, AlertTriangle, CheckCircle2, ShieldAlert, Navigation, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const ambulanceImg = '/src/assets/images/emergency_response_1792062793067.jpg'
+import ambulanceImg from '../assets/images/emergency_response_1792062793067.jpg'
 
 export default function Emergency() {
   const { user } = useAuth()
