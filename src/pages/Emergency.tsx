@@ -8,6 +8,7 @@ export default function Emergency() {
   const { user } = useAuth()
   const [submitting, setSubmitting] = useState(false)
   const [alert, setAlert] = useState<SosAlert | null>(null)
+  const [emergencyType, setEmergencyType] = useState('')
   const [message, setMessage] = useState('')
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
   const [locError, setLocError] = useState('')
@@ -22,15 +23,18 @@ export default function Emergency() {
     )
   }
 
+  const emergencyTypes = ['Breathing difficult', 'Injury/accident', 'Chest pain', 'Medical', 'Unconscious', 'Other']
   const trigger = async () => {
     setError('')
+    if (!emergencyType) { setError('Please select an emergency type.'); return }
     setSubmitting(true)
     if (!location) captureLocation()
+    const reason = [`Emergency type: ${emergencyType}`, message.trim()].filter(Boolean).join('. ')
     const { data, error: err } = await supabase.from('sos_alerts').insert({
       patient_id: user!.id,
       latitude: location?.lat ?? null,
       longitude: location?.lng ?? null,
-      message: message || 'I need medical help now.',
+      message: reason || 'I need medical help now.',
       status: 'active',
     }).select().single()
     setSubmitting(false)
@@ -97,13 +101,24 @@ export default function Emergency() {
       </div>
 
       <div className="bg-white rounded-xl shadow p-4 space-y-3">
-        <label className="text-sm font-medium">Optional message</label>
+        <p className="text-sm font-medium">Emergency type</p>
+        <div className="flex flex-wrap gap-2">
+          {emergencyTypes.map(t => (
+            <button key={t} type="button" onClick={() => setEmergencyType(t)}
+              className={`rounded-full px-3 py-1.5 text-xs font-medium border ${emergencyType === t ? 'bg-red-600 text-white border-red-600' : 'bg-white text-slate-600 border-slate-300'}`}>
+              {t}
+            </button>
+          ))}
+        </div>
+        <label className="text-sm font-medium">Additional details (optional)</label>
         <textarea value={message} onChange={e => setMessage(e.target.value)} rows={2}
-          placeholder="e.g. Having chest pain, difficulty breathing"
+          placeholder="Describe the situation briefly..."
           className="w-full border rounded-lg px-3 py-2" />
+        <label className="text-sm font-medium">Your address</label>
+        <p className="text-xs text-slate-500">14 Main Rd, Langa, Cape Town</p>
         <button onClick={captureLocation}
           className="w-full border rounded-lg py-2 text-sm flex items-center justify-center gap-2">
-          <MapPin size={16} /> {location ? `Location captured (${location.lat.toFixed(4)}, ${location.lng.toFixed(4)})` : 'Capture my location'}
+          <MapPin size={16} /> {location ? `Location captured (${location.lat.toFixed(4)}, ${location.lng.toFixed(4)})` : 'Share your current location'}
         </button>
         {locError && <p className="text-xs text-red-600">{locError}</p>}
       </div>

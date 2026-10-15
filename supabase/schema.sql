@@ -12,6 +12,7 @@ create table if not exists public.profiles (
     check (role in ('patient','doctor','nurse','first_responder','admin')),
   phone text,
   avatar_url text,
+  clinic text,
   created_at timestamptz not null default now()
 );
 
@@ -57,6 +58,7 @@ create table if not exists public.appointments (
     check (status in ('booked','checked_in','in_progress','completed','cancelled','no_show')),
   queue_number int,
   notes text,
+  clinic text,
   created_at timestamptz not null default now()
 );
 

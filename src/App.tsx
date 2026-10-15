@@ -3,7 +3,9 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import { Layout } from './components/Layout'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import ForgotPassword from './pages/ForgotPassword'
 import Home from './pages/Home'
+import Notifications from './pages/Notifications'
 import BookAppointment from './pages/BookAppointment'
 import Clinics from './pages/Clinics'
 import HealthTips from './pages/HealthTips'
@@ -15,6 +17,8 @@ import StaffConsole from './pages/StaffConsole'
 import FirstResponderInbox from './pages/FirstResponderInbox'
 import AdminDashboard from './pages/AdminDashboard'
 import Profile from './pages/Profile'
+import MedicalRecord from './pages/MedicalRecord'
+import EditProfile from './pages/EditProfile'
 import NotFound from './pages/NotFound'
 
 function FullPageLoader() {
@@ -48,10 +52,14 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
       <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
+      <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
 
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="/" element={<Home />} />
+        <Route path="/notifications" element={<Notifications />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
+        <Route path="/medical-record" element={<MedicalRecord />} />
 
         {/* Patient */}
         <Route path="/clinics" element={<ProtectedRoute><Clinics /></ProtectedRoute>} />

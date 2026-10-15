@@ -24,7 +24,7 @@ export default function Login() {
 
   return (
     <div className="max-w-sm mx-auto mt-10 space-y-4">
-      <div className="bg-teal-600 rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-teal-600 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
         <h1 className="text-2xl font-bold">CareConnect</h1>
         <p className="text-sm opacity-80">Connecting Patients With Healthcare</p>
       </div>
@@ -46,6 +46,9 @@ export default function Login() {
               onChange={e => setPassword(e.target.value)}
               className="mt-1 w-full bg-slate-50 border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
+          </div>
+          <div className="text-right">
+            <Link to="/forgot-password" className="text-xs text-teal-600 font-medium">Forgot password?</Link>
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button

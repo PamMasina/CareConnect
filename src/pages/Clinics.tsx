@@ -1,26 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MapPin, Clock, Search, Filter, ArrowLeft, CalendarPlus } from 'lucide-react'
+import { CLINICS, type Clinic } from '../lib/clinics'
 
-type Clinic = {
-  id: string
-  name: string
-  address: string
-  suburb: string
-  phone: string
-  openTime: string
-  closeTime: string
-  days: number[]
-  distance: string
-}
 
-const CLINICS: Clinic[] = [
-  { id: 'langa-chc', name: 'Langa CHC', address: 'Washington Rd', suburb: 'Langa', phone: '+27 21 694 3000', openTime: '07:30', closeTime: '19:00', days: [1,2,3,4,5,6], distance: '2.1 km' },
-  { id: 'khayelitsha-clinic', name: 'Khayelitsha Clinic', address: 'Ntlazana Rd', suburb: 'Khayelitsha', phone: '+27 21 360 8400', openTime: '08:00', closeTime: '17:00', days: [1,2,3,4,5], distance: '4.8 km' },
-  { id: 'mitchells-cdc', name: "Mitchells Plain CDC", address: 'AZ Berman Dr', suburb: "Mitchells Plain", phone: '+27 21 370 0730', openTime: '08:00', closeTime: '16:00', days: [1,2,3,4,5], distance: '9.2 km' },
-  { id: 'gugulethu-chc', name: 'Gugulethu CHC', address: 'NY 108', suburb: 'Gugulethu', phone: '+27 21 638 6300', openTime: '07:00', closeTime: '20:00', days: [1,2,3,4,5], distance: '11.4 km' },
-  { id: 'cape-town-community', name: 'Cape Town Community Clinic', address: '123 Long Street', suburb: 'Cape Town CBD', phone: '+27 21 000 0000', openTime: '08:00', closeTime: '17:00', days: [1,2,3,4,5], distance: '3.0 km' },
-]
 
 function toMinutes(hhmm: string) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m }
 function statusFor(c: Clinic, now = new Date()) {
@@ -51,7 +34,7 @@ export default function Clinics() {
   return (
     <div className="-mx-4 -mt-4">
       {/* Hero header */}
-      <div className="bg-teal-600 text-white px-4 pt-6 pb-8 rounded-b-3xl">
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 pt-6 pb-8 rounded-b-3xl shadow-lg">
         <div className="flex items-center gap-3 mb-4">
           <button onClick={() => navigate(-1)} className="p-1"><ArrowLeft size={20} /></button>
           <h1 className="text-xl font-bold flex-1">Nearby Clinics</h1>

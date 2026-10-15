@@ -13,7 +13,7 @@ export default function HealthTips() {
   const navigate = useNavigate()
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl p-4 flex items-center gap-3 shadow-lg">
         <button onClick={() => navigate(-1)} className="p-1"><ArrowLeft size={20} /></button>
         <h1 className="text-xl font-bold">Health Tips</h1>
       </div>

@@ -6,6 +6,7 @@ export interface Profile {
   role: Role
   phone?: string | null
   avatar_url?: string | null
+  clinic?: string | null
   created_at: string
 }
 
@@ -29,6 +30,7 @@ export interface Appointment {
   status: AppointmentStatus
   queue_number: number | null
   notes: string | null
+  clinic: string | null
   created_at: string
   // joined
   service?: Service | null

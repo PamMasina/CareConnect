@@ -15,8 +15,8 @@ export default defineConfig({
         name: 'CareConnect',
         short_name: 'CareConnect',
         description: 'Book appointments online and reach first responders with one tap.',
-        theme_color: '#0f766e',
-        background_color: '#f8fafc',
+        theme_color: '#769471',
+        background_color: '#FDF8F2',
         display: 'standalone',
         start_url: '/',
         icons: [

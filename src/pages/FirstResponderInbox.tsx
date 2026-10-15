@@ -59,13 +59,19 @@ export default function FirstResponderInbox() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-semibold">{a.patient?.full_name ?? 'Unknown patient'}</h3>
+                  <p className="text-xs text-slate-500">Patient ID: {String(a.patient_id).slice(0,8)}</p>
                   <p className="text-xs text-slate-500">{new Date(a.created_at).toLocaleString()}</p>
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full ${a.status === 'active' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
                   {a.status}
                 </span>
               </div>
-              {a.message && <p className="text-sm text-slate-700">{a.message}</p>}
+              {a.message && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-xs font-semibold text-red-700 mb-1">Reason for emergency</p>
+                  <p className="text-sm text-slate-800">{a.message}</p>
+                </div>
+              )}
               {a.address_text && <p className="text-sm text-slate-500">{a.address_text}</p>}
               {maps && (
                 <a href={maps} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-teal-700 underline">

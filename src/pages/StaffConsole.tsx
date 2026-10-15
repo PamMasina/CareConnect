@@ -1,8 +1,17 @@
-import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import StaffAppointments from './StaffAppointments'
 import QueueManage from './QueueManage'
+import DoctorDashboard from './DoctorDashboard'
+import NurseDashboard from './NurseDashboard'
+import { useState } from 'react'
 
 export default function StaffConsole() {
+  const { profile } = useAuth()
+  const role = profile?.role
+
+  if (role === 'doctor') return <DoctorDashboard />
+  if (role === 'nurse') return <NurseDashboard />
+
   const [tab, setTab] = useState<'appts' | 'queue'>('appts')
   return (
     <div className="space-y-4">

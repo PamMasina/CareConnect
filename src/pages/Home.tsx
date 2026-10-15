@@ -7,6 +7,7 @@ import { MapPin, HeartPulse, Bell, AlertTriangle, BookOpen } from 'lucide-react'
 
 export default function Home() {
   const { profile, user } = useAuth()
+  const clinic = (user as any)?.user_metadata?.clinic
   const [upcoming, setUpcoming] = useState(0)
   const [nextAppt, setNextAppt] = useState<Appointment | null>(null)
 
@@ -27,9 +28,9 @@ export default function Home() {
   if (role !== 'patient') {
     return (
       <div className="space-y-4">
-        <div className="bg-brand text-white rounded-2xl p-5">
+        <div className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-2xl p-5 shadow-lg">
           <h1 className="text-2xl font-bold">Welcome, {profile?.full_name}</h1>
-          <p className="text-sm opacity-80">Role: {role?.replace('_',' ')}</p>
+          <p className="text-sm opacity-80">Role: {role?.replace('_',' ')}{clinic ? ` · ${clinic}` : ''}</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Link to="/staff" className="block bg-white rounded-xl shadow p-4 hover:shadow-md">
@@ -51,11 +52,12 @@ export default function Home() {
   return (
     <div className="-mx-4 -mt-4 space-y-4 pb-4">
       {/* Hero */}
-      <div className="bg-teal-600 text-white px-4 pt-6 pb-16 rounded-b-3xl">
-        <div className="flex items-start justify-between">
+      <div className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-4 pt-6 pb-16 rounded-b-3xl relative overflow-hidden shadow-lg">
+
+        <div className="relative flex items-start justify-between">
           <div>
             <p className="text-sm opacity-80">Hello, {profile?.full_name?.split(' ')[0] || 'there'}</p>
-            <h1 className="text-2xl font-bold">ClinicConnect</h1>
+            <h1 className="text-2xl font-bold">CareConnect</h1>
           </div>
           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-semibold">
             {initials}
@@ -63,10 +65,10 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="px-4 -mt-12 space-y-4">
+      <div className="px-4 space-y-4 -mt-4">
         {/* Status cards */}
         <div className="grid grid-cols-2 gap-3">
-          <StatCard count={0} label="Unread messages" />
+          <StatCard count={0} label="Unread messages" to="/notifications" />
           <StatCard count={upcoming} label="Upcoming" />
         </div>
 
@@ -101,13 +103,14 @@ export default function Home() {
   )
 }
 
-function StatCard({ count, label }: { count: number; label: string }) {
-  return (
+function StatCard({ count, label, to }: { count: number; label: string; to?: string }) {
+  const inner = (
     <div className="bg-teal-700 text-white rounded-2xl p-4">
       <p className="text-3xl font-bold">{count}</p>
       <p className="text-xs mt-1 opacity-90">{label}</p>
     </div>
   )
+  return to ? <Link to={to}>{inner}</Link> : inner
 }
 
 function QuickAction({ to, icon, label, badge }: { to: string; icon: React.ReactNode; label: string; badge?: number }) {
