@@ -10,7 +10,6 @@ import {
   User,
   LogOut,
   ShieldCheck,
-  PhoneCall,
   MapPin,
   Building2,
   BookOpen,
@@ -49,7 +48,9 @@ export function Layout() {
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
   }, [])
 
   // Close mobile drawer on route change
@@ -134,43 +135,9 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 selection:bg-teal-500 selection:text-white">
       {/* =========================================================================
-          1. TOP UTILITY / INSTITUTIONAL TRUST BANNER
-         ========================================================================= */}
-      <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 truncate">
-            <span className="font-semibold text-white tracking-wide">Western Cape Public Health Network</span>
-            <span className="hidden sm:inline text-slate-600">·</span>
-            <span className="hidden sm:inline text-slate-400">City of Cape Town Clinics & Community Health Centres</span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4 text-[11px] font-medium">
-            <div className="hidden md:flex items-center gap-2 text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
-              <span>22 Facilities Active</span>
-            </div>
-            <a
-              href="tel:10177"
-              className="text-red-300 hover:text-white font-semibold transition-colors flex items-center gap-1"
-            >
-              <PhoneCall size={12} className="text-red-400" />
-              <span>Ambulance: 10177</span>
-            </a>
-            <span className="text-slate-700">|</span>
-            <a
-              href="tel:112"
-              className="text-slate-300 hover:text-white transition-colors"
-            >
-              Cell: 112
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* =========================================================================
           2. STRICT 3-ZONE TOP BAR CONTRACT
           [Zone 1: Brand Wordmark] — [Zone 2: 4-5 Nav Links] — [Zone 3: 1 Primary Action]
-         ========================================================================= */}
+          ========================================================================= */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[4.5rem] py-3 flex flex-wrap items-center justify-between gap-4 sm:gap-8">
           {/* ZONE 1: BRAND WORDMARK (Single text element with distinctive medical emblem) */}
@@ -386,21 +353,21 @@ export function Layout() {
 
       {/* =========================================================================
           3. MAIN CONTENT VIEWPORT
-         ========================================================================= */}
+          ========================================================================= */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 pb-24 lg:pb-16">
         <Outlet />
       </main>
 
       {/* =========================================================================
           4. PROPER COMPREHENSIVE INSTITUTIONAL FOOTER
-         ========================================================================= */}
+          ========================================================================= */}
       <footer className="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
             {/* Column 1: Brand & Mandate */}
             <div className="lg:col-span-2 space-y-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-xs">
+                <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center">
                   <Activity size={20} className="stroke-[2.5]" />
                 </div>
                 <span className="text-xl font-bold tracking-tight text-white">CareConnect</span>
@@ -524,7 +491,7 @@ export function Layout() {
 
       {/* =========================================================================
           5. MOBILE BOTTOM NAVIGATION (Fixed bottom on touch screens, max 5 items)
-         ========================================================================= */}
+          ========================================================================= */}
       <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg">
         <div className="max-w-md mx-auto grid grid-cols-5 items-center h-16 px-1">
           {mobileBottomItems.map(item => {
