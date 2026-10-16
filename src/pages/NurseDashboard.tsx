@@ -8,7 +8,7 @@ import { Users, Stethoscope, Activity, HeartPulse } from 'lucide-react'
 
 export default function NurseDashboard() {
   const { profile, user } = useAuth()
-  const clinic = (user as any)?.user_metadata?.clinic || profile?.clinic || 'Langa CHC'
+  const clinic = (user as any)?.user_metadata?.clinic || (profile?.clinic ?? null)
   const [tab, setTab] = useState<'queue' | 'appts'>('queue')
   const [waiting, setWaiting] = useState(0)
   const [checkedIn, setCheckedIn] = useState(0)
@@ -48,7 +48,7 @@ export default function NurseDashboard() {
               {profile?.full_name || 'Sister Nomvula Khumalo'}
             </h1>
             <p className="text-xs text-slate-300 mt-1">
-              {clinic} · Triage Bay 1 · {dateLabel}
+              {clinic && `${clinic} · `}Triage Bay 1 · {dateLabel}
             </p>
           </div>
 

@@ -34,7 +34,7 @@ export default function Home() {
   const { session, profile, user } = useAuth()
   const navigate = useNavigate()
   const role = profile?.role || 'patient'
-  const clinic = profile?.clinic || 'Langa CHC'
+  const clinic = profile?.clinic ?? null
 
   // Patient live state
   const [upcomingCount, setUpcomingCount] = useState(0)
@@ -298,7 +298,12 @@ export default function Home() {
               Hello, {profile?.full_name?.split(' ')[0] || 'Member'}
             </h1>
             <p className="mt-2 text-slate-200 text-sm sm:text-base leading-relaxed">
-              Your registered clinic is <strong className="text-white">{clinic}</strong>. Schedule visits without 5:00 AM waiting lines, track your real-time queue position, and access 24/7 emergency dispatch.
+              {clinic && (
+                <>
+                  Your registered clinic is <strong className="text-white">{clinic}</strong>.{' '}
+                </>
+              )}
+              Schedule visits without 5:00 AM waiting lines, track your real-time queue position, and access 24/7 emergency dispatch.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">

@@ -18,7 +18,7 @@ import {
 export default function Profile() {
   const { profile, user, role, signOut } = useAuth()
   const navigate = useNavigate()
-  const clinic = (user as any)?.user_metadata?.clinic || profile?.clinic || 'Langa CHC'
+  const clinic = (user as any)?.user_metadata?.clinic || profile?.clinic || null
   const meta = (user as any)?.user_metadata || {}
   const address = meta.address || {}
   const nok = meta.next_of_kin || {}
@@ -51,10 +51,12 @@ export default function Profile() {
               Registered Role: <span className="capitalize font-semibold text-slate-800">{role?.replace('_', ' ')}</span>
             </p>
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1 text-xs text-slate-600">
-              <span className="flex items-center gap-1">
-                <Building2 size={13} className="text-teal-600" />
-                <span>{clinic}</span>
-              </span>
+              {clinic && (
+                <span className="flex items-center gap-1">
+                  <Building2 size={13} className="text-teal-600" />
+                  <span>{clinic}</span>
+                </span>
+              )}
               <span>·</span>
               <span className="font-mono text-slate-400 text-[11px]">ID: {profile?.id?.slice(0, 8)}</span>
             </div>

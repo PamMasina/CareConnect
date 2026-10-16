@@ -164,7 +164,7 @@ export default function MyAppointments() {
 
                     <span className="flex items-center gap-1">
                       <Building2 size={13} className="text-slate-400" />
-                      <span>{appt.clinic || 'Langa CHC'}</span>
+                      <span>{appt.clinic ?? null}</span>
                     </span>
 
                     {appt.doctor?.full_name && (

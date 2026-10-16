@@ -49,7 +49,7 @@ export default function QueueStatus() {
     load()
   }, [user])
 
-  const clinicName = profile?.clinic || 'Langa CHC'
+  const clinicName = profile?.clinic ?? null
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -63,7 +63,9 @@ export default function QueueStatus() {
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
             Live Queue Position
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">{clinicName} · Western Cape Health</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {clinicName ? `${clinicName} · ` : ''}Western Cape Health
+          </p>
         </div>
 
         <button

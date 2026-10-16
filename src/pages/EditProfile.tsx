@@ -31,7 +31,7 @@ export default function EditProfile() {
     setLastName(parts.slice(1).join(' '))
     setEmail(user?.email || '')
     setPhone(profile?.phone || '')
-    setClinic((user as any)?.user_metadata?.clinic || profile?.clinic || 'Langa CHC')
+    setClinic((user as any)?.user_metadata?.clinic || profile?.clinic || '')
     const addr = (user as any)?.user_metadata?.address
     if (addr) {
       setStreetNo(addr.streetNo || streetNo)
@@ -66,7 +66,7 @@ export default function EditProfile() {
     if (metaErr) console.error('metadata update error:', metaErr.message)
     const { error: err } = await supabase
       .from('profiles')
-      .update({ full_name: `${firstName} ${lastName}`.trim(), phone, clinic })
+      .update({ full_name: `${firstName} ${lastName}`.trim(), phone, clinic: clinic || null })
       .eq('id', user.id)
     setSaving(false)
     if (err) {

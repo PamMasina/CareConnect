@@ -8,7 +8,7 @@ import { Users, ClipboardList, Stethoscope, Clock, CheckCircle2 } from 'lucide-r
 
 export default function DoctorDashboard() {
   const { profile, user } = useAuth()
-  const clinic = (user as any)?.user_metadata?.clinic || profile?.clinic || 'Langa CHC'
+  const clinic = (user as any)?.user_metadata?.clinic || (profile?.clinic ?? null)
   const [tab, setTab] = useState<'appts' | 'queue'>('appts')
   const [remaining, setRemaining] = useState(0)
   const [todayCount, setTodayCount] = useState(0)
@@ -53,7 +53,7 @@ export default function DoctorDashboard() {
               {profile?.full_name || 'Dr. Sipho Dlamini'}
             </h1>
             <p className="text-xs text-slate-300 mt-1">
-              {clinic} · Consultation Room 4 · {dateLabel}
+              {clinic && `${clinic} · `}Consultation Room 4 · {dateLabel}
             </p>
           </div>
 

@@ -164,8 +164,12 @@ export default function AdminDashboard() {
                   <h3 className="font-bold text-xs text-slate-900 truncate">{p.full_name}</h3>
                   <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
                     <span className="font-mono text-slate-400">{p.id.slice(0, 8)}</span>
-                    <span>·</span>
-                    <span>{p.clinic || 'Cape Town Metro'}</span>
+                    {p.clinic && (
+                      <>
+                        <span>·</span>
+                        <span>{p.clinic}</span>
+                      </>
+                    )}
                   </div>
                 </div>
 

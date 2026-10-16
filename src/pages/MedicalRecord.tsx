@@ -74,10 +74,12 @@ export default function MedicalRecord() {
           <span className="text-slate-400 font-semibold uppercase text-[10px] block">Full Name</span>
           <p className="font-bold text-slate-900 text-sm mt-0.5">{profile?.full_name || 'Thabo Mbeki'}</p>
         </div>
-        <div>
-          <span className="text-slate-400 font-semibold uppercase text-[10px] block">Primary Facility</span>
-          <p className="font-bold text-slate-900 text-sm mt-0.5">{profile?.clinic || 'Langa CHC'}</p>
-        </div>
+        {profile?.clinic && (
+          <div>
+            <span className="text-slate-400 font-semibold uppercase text-[10px] block">Primary Facility</span>
+            <p className="font-bold text-slate-900 text-sm mt-0.5">{profile.clinic}</p>
+          </div>
+        )}
         <div>
           <span className="text-slate-400 font-semibold uppercase text-[10px] block">Contact Phone</span>
           <p className="font-bold text-slate-900 text-sm mt-0.5">{profile?.phone || '+27 71 234 5678'}</p>
@@ -113,7 +115,7 @@ export default function MedicalRecord() {
                   {last.service?.name ?? 'General Health Consultation'}
                 </p>
                 <p className="text-slate-500 text-[11px] mt-1">
-                  Encounter Facility: {(last as any).clinic?.full_name ?? 'Langa CHC'}
+                  Encounter Facility: {(last as any).clinic?.full_name ?? null}
                 </p>
               </div>
 

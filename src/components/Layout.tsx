@@ -40,7 +40,7 @@ export function Layout() {
   const userRef = useRef<HTMLDivElement>(null)
 
   const role = profile?.role || 'patient'
-  const clinic = profile?.clinic || 'Cape Town Metro'
+  const clinic = profile?.clinic ?? null
 
   // Close dropdowns on click outside
   useEffect(() => {
@@ -251,8 +251,12 @@ export function Layout() {
                       <p className="text-xs font-bold text-slate-900 truncate">{profile.full_name}</p>
                       <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
                       <div className="mt-2 flex items-center gap-1.5 text-[11px] text-slate-600">
-                        <MapPin size={12} className="text-slate-400" />
-                        <span>{clinic}</span>
+                        {clinic && (
+                          <>
+                            <MapPin size={12} className="text-slate-400" />
+                            <span>{clinic}</span>
+                          </>
+                        )}
                       </div>
                       <span className={`inline-block mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded border ${roleBadgeColors[role] || 'bg-slate-100'}`}>
                         {roleLabels[role] || role}
