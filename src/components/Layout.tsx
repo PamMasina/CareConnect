@@ -19,7 +19,6 @@ import {
   Menu,
   X,
   Stethoscope,
-  HeartHandshake,
 } from 'lucide-react'
 
 interface NavLinkItem {
@@ -409,10 +408,6 @@ export function Layout() {
               <p className="text-slate-400 text-sm leading-relaxed max-w-md">
                 Empowering Cape Town residents with transparent clinic waiting times, seamless appointment scheduling, and rapid GPS-linked emergency medical dispatch across public health facilities.
               </p>
-              <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium">
-                <HeartHandshake size={16} />
-                <span>Western Cape Department of Health Partner Facility Network</span>
-              </div>
             </div>
 
             {/* Column 2: Emergency Hotlines */}
