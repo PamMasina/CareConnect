@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { homePathForRole } from '../lib/routes'
 import { LogIn, Activity, ShieldCheck, Clock, MapPin, CheckCircle2, AlertCircle } from 'lucide-react'
 
 // Image asset generated for healthcare consultation
 import consultationImg from '../assets/images/medical_consultation_1792062791299.jpg'
 
 export default function Login() {
-  const { signIn } = useAuth()
+  const { signIn, role } = useAuth()
   const navigate = useNavigate()
   const location = useLocation() as any
   const [email, setEmail] = useState('')
@@ -22,7 +23,7 @@ export default function Login() {
     const res = await signIn(email, password)
     setLoading(false)
     if (res.error) setError(res.error)
-    else navigate(location.state?.from || '/')
+    else navigate(location.state?.from || homePathForRole(role))
   }
 
   return (
@@ -158,7 +159,7 @@ export default function Login() {
               <p className="text-xs text-slate-500">
                 Don't have an account yet?{' '}
                 <Link to="/signup" className="text-teal-700 font-semibold hover:underline">
-                  Create patient profile
+                  Create your account
                 </Link>
               </p>
             </div>

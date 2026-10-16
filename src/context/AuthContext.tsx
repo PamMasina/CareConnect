@@ -10,7 +10,7 @@ interface AuthValue {
   role: Profile['role'] | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error?: string }>
-  signUp: (email: string, password: string, fullName: string, role?: Profile['role']) => Promise<{ error?: string }>
+  signUp: (email: string, password: string, fullName: string, role?: Profile['role']) => Promise<{ error?: string; signedIn?: boolean }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
 }
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           options: { data: { full_name: fullName, role } },
         })
         if (!error && data.user && data.session) await loadProfile(data.user.id)
-        return { error: error?.message }
+        return { error: error?.message, signedIn: Boolean(data.session) }
       },
       async signOut() {
         await supabase.auth.signOut()

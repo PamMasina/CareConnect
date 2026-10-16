@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { homePathForRole } from '../lib/routes'
 import { UserPlus, ArrowLeft, ArrowRight, CheckCircle2, Activity, ShieldCheck, MapPin } from 'lucide-react'
 
 const GENDERS = ['Male', 'Female', 'Other']
@@ -17,6 +18,24 @@ const PROVINCES = [
   'North West',
 ]
 
+const ROLES = [
+  { value: 'patient', label: 'Patient', description: 'Book appointments and access clinic services' },
+  { value: 'doctor', label: 'Doctor', description: 'Consult patients and manage the clinic schedule' },
+  { value: 'nurse', label: 'Nurse', description: 'Triage patients and manage the waiting room' },
+  { value: 'first_responder', label: 'EMS Paramedic', description: 'Respond to emergency calls' },
+  { value: 'admin', label: 'Administrator', description: 'Manage the CareConnect network' },
+] as const
+
+type SignupRole = (typeof ROLES)[number]['value']
+
+const ROLE_LABELS: Record<SignupRole, string> = {
+  patient: 'Patient',
+  doctor: 'Doctor',
+  nurse: 'Nurse',
+  first_responder: 'EMS Paramedic',
+  admin: 'Administrator',
+}
+
 export default function Signup() {
   const { signUp } = useAuth()
   const navigate = useNavigate()
@@ -24,6 +43,7 @@ export default function Signup() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [signedIn, setSignedIn] = useState(false)
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -35,6 +55,7 @@ export default function Signup() {
   const [contact, setContact] = useState('')
   const [idNumber, setIdNumber] = useState('')
   const [notify, setNotify] = useState('Email')
+  const [role, setRole] = useState<SignupRole>('patient')
 
   const [streetNo, setStreetNo] = useState('')
   const [streetName, setStreetName] = useState('')
@@ -45,6 +66,8 @@ export default function Signup() {
   const [nokRelation, setNokRelation] = useState('')
   const [nokContact, setNokContact] = useState('')
 
+  const selectedRole = ROLES.find(r => r.value === role) ?? ROLES[0]
+
   if (done) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6">
@@ -52,16 +75,16 @@ export default function Signup() {
           <div className="mx-auto w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
             <CheckCircle2 size={36} />
           </div>
-          <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">Patient Account Created</h2>
+          <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">{ROLE_LABELS[role]} Account Created</h2>
           <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
-            Your profile has been registered on the CareConnect network. You can now sign in to book clinic appointments and access waiting queue status.
+            Your account has been registered on the CareConnect network. Sign in to access your {ROLE_LABELS[role]} workspace.
           </p>
           <div className="pt-2">
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate(signedIn ? homePathForRole(role) : '/login')}
               className="w-full bg-teal-600 text-white rounded-xl py-3 text-xs font-semibold hover:bg-teal-700 transition-colors shadow-sm"
             >
-              Sign In to Patient Portal
+              {signedIn ? `Continue to ${ROLE_LABELS[role]} Dashboard` : 'Sign In'}
             </button>
           </div>
         </div>
@@ -93,8 +116,9 @@ export default function Signup() {
     setError('')
     setLoading(true)
     const fullName = `${firstName} ${lastName}`.trim()
-    const res = await signUp(email, password, fullName, 'patient')
+    const res = await signUp(email, password, fullName, role)
     setLoading(false)
+    setSignedIn(Boolean(res.signedIn))
     if (res.error) setError(res.error)
     else setDone(true)
   }
@@ -119,7 +143,7 @@ export default function Signup() {
               <Activity size={20} />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Create Patient Account</h1>
+              <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Create Your CareConnect Account</h1>
               <p className="text-xs text-slate-500">Western Cape Public Health Network</p>
             </div>
           </div>
@@ -132,6 +156,24 @@ export default function Signup() {
         <form onSubmit={submit} className="space-y-4">
           {step === 1 && (
             <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Register As *
+                </label>
+                <select
+                  value={role}
+                  onChange={e => setRole(e.target.value as SignupRole)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+                >
+                  {ROLES.map(r => (
+                    <option key={r.value} value={r.value}>
+                      {r.label}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-slate-400 mt-1.5">{selectedRole.description}</p>
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
@@ -376,7 +418,7 @@ export default function Signup() {
                   className="flex-1 bg-teal-600 text-white rounded-xl py-2.5 font-semibold text-xs hover:bg-teal-700 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   <UserPlus size={15} />
-                  <span>{loading ? 'Creating account...' : 'Complete Patient Registration'}</span>
+                  <span>{loading ? 'Creating account...' : 'Complete Registration'}</span>
                 </button>
               </div>
             </div>

@@ -95,7 +95,7 @@ export default function EditProfile() {
           <div>
             <div className="inline-flex items-center gap-1.5 text-xs text-teal-700 font-medium mb-0.5">
               <User size={14} />
-              <span>Patient Profile Management</span>
+              <span>Profile Management</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
               Edit Health Profile
