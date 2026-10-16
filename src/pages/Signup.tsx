@@ -56,6 +56,7 @@ export default function Signup() {
   const [idNumber, setIdNumber] = useState('')
   const [notify, setNotify] = useState('Email')
   const [role, setRole] = useState<SignupRole>('patient')
+  const [staffNumber, setStaffNumber] = useState('')
 
   const [streetNo, setStreetNo] = useState('')
   const [streetName, setStreetName] = useState('')
@@ -114,9 +115,13 @@ export default function Signup() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (role !== 'patient' && !/^[A-Za-z0-9-]{4,12}$/.test(staffNumber)) {
+      setError('Please enter a valid staff number.')
+      return
+    }
     setLoading(true)
     const fullName = `${firstName} ${lastName}`.trim()
-    const res = await signUp(email, password, fullName, role)
+    const res = await signUp(email, password, fullName, role, staffNumber)
     setLoading(false)
     setSignedIn(Boolean(res.signedIn))
     if (res.error) setError(res.error)
@@ -173,6 +178,23 @@ export default function Signup() {
                 </select>
                 <p className="text-[11px] text-slate-400 mt-1.5">{selectedRole.description}</p>
               </div>
+
+              {role !== 'patient' && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Staff Number *
+                  </label>
+                  <input
+                    value={staffNumber}
+                    onChange={e => setStaffNumber(e.target.value)}
+                    placeholder="e.g. HPRA-12345"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                  <p className="text-[11px] text-slate-400 mt-1.5">
+                    Required for staff roles so the network can verify your employment.
+                  </p>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>

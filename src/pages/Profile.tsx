@@ -19,6 +19,7 @@ export default function Profile() {
   const { profile, user, role, signOut } = useAuth()
   const navigate = useNavigate()
   const clinic = (user as any)?.user_metadata?.clinic || profile?.clinic || null
+  const staffNumber = (user as any)?.user_metadata?.staff_number || null
   const meta = (user as any)?.user_metadata || {}
   const address = meta.address || {}
   const nok = meta.next_of_kin || {}
@@ -50,6 +51,11 @@ export default function Profile() {
             <p className="text-xs text-slate-500 font-medium">
               Registered Role: <span className="capitalize font-semibold text-slate-800">{role?.replace('_', ' ')}</span>
             </p>
+            {role !== 'patient' && (
+              <p className="text-xs text-slate-500 font-medium">
+                Staff Number: <span className="font-semibold text-slate-800">{staffNumber}</span>
+              </p>
+            )}
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1 text-xs text-slate-600">
               {clinic && (
                 <span className="flex items-center gap-1">
