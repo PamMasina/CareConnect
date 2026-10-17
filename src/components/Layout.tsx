@@ -101,6 +101,13 @@ export function Layout() {
           { to: '/clinics', label: 'Clinics', icon: Building2 },
           { to: '/profile', label: 'Profile', icon: User },
         ]
+      : role === 'admin'
+      ? [
+          { to: '/', label: 'Home', icon: Activity },
+          { to: '/admin', label: 'Admin', icon: ShieldCheck },
+          { to: '/clinics', label: 'Clinics', icon: Building2 },
+          { to: '/profile', label: 'Profile', icon: User },
+        ]
       : [
           { to: '/', label: 'Home', icon: Activity },
           { to: '/staff', label: 'Staff Console', icon: Activity },

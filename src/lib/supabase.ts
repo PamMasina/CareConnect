@@ -14,7 +14,7 @@ const hasRealConfig = Boolean(
 
 // ---------- IN-MEMORY / LOCALSTORAGE FALLBACK CLIENT ----------
 
-const STORAGE_KEY = 'careconnect_mock_db_v1'
+const STORAGE_KEY = 'careconnect_mock_db_v2'
 
 interface MockUser {
   id: string
@@ -115,6 +115,7 @@ function getInitialDB(): MockDB {
     { id: patientId, email: 'patient@careconnect.local', password: 'password123', user_metadata: { full_name: 'Thabo Mbeki', role: 'patient', clinic: 'Langa CHC' } },
     { id: doctorId, email: 'doctor@careconnect.local', password: 'password123', user_metadata: { full_name: 'Dr. Sipho Dlamini', role: 'doctor', clinic: 'Langa CHC' } },
     { id: nurseId, email: 'nurse@careconnect.local', password: 'password123', user_metadata: { full_name: 'Sister Nomvula Khumalo', role: 'nurse', clinic: 'Langa CHC' } },
+    { id: 'usr-nurse-2', email: 'nurse2@careconnect.local', password: 'password123', user_metadata: { full_name: 'Sister Lindiwe Ntuli', role: 'nurse', clinic: 'Greenpoint Community Clinic' } },
     { id: responderId, email: 'responder@careconnect.local', password: 'password123', user_metadata: { full_name: 'David Hendricks (EMS)', role: 'first_responder', clinic: 'Langa CHC' } },
     { id: adminId, email: 'admin@careconnect.local', password: 'password123', user_metadata: { full_name: 'Admin Pam', role: 'admin', clinic: 'Cape Town Community Clinic' } },
   ]
@@ -123,12 +124,14 @@ function getInitialDB(): MockDB {
     { id: patientId, full_name: 'Thabo Mbeki', role: 'patient', phone: '+27 71 234 5678', clinic: 'Langa CHC', created_at: now.toISOString() },
     { id: doctorId, full_name: 'Dr. Sipho Dlamini', role: 'doctor', phone: '+27 82 555 1234', clinic: 'Langa CHC', created_at: now.toISOString() },
     { id: nurseId, full_name: 'Sister Nomvula Khumalo', role: 'nurse', phone: '+27 83 444 5678', clinic: 'Langa CHC', created_at: now.toISOString() },
+    { id: 'usr-nurse-2', full_name: 'Sister Lindiwe Ntuli', role: 'nurse', phone: '+27 82 444 9876', clinic: 'Greenpoint Community Clinic', created_at: now.toISOString() },
     { id: responderId, full_name: 'David Hendricks (EMS)', role: 'first_responder', phone: '+27 84 999 1122', clinic: 'Langa CHC', created_at: now.toISOString() },
     { id: adminId, full_name: 'Admin Pam', role: 'admin', phone: '+27 21 000 0000', clinic: 'Cape Town Community Clinic', created_at: now.toISOString() },
   ]
 
   const appt1Id = 'appt-1'
   const appt2Id = 'appt-2'
+  const appt3Id = 'appt-3'
 
   const appointments: Appointment[] = [
     {
@@ -155,6 +158,18 @@ function getInitialDB(): MockDB {
       clinic: 'Langa CHC',
       created_at: now.toISOString(),
     },
+    {
+      id: appt3Id,
+      patient_id: patientId,
+      doctor_id: null,
+      service_id: 'svc-3',
+      scheduled_at: `${todayStr}T11:00:00.000Z`,
+      status: 'booked',
+      queue_number: 3,
+      notes: 'Clinic: Langa CHC · Childhood vaccination with nursing team',
+      clinic: 'Langa CHC',
+      created_at: now.toISOString(),
+    },
   ]
 
   const queue_entries: QueueEntry[] = [
@@ -172,9 +187,10 @@ function getInitialDB(): MockDB {
     {
       id: 'sos-1',
       patient_id: patientId,
-      latitude: -33.9485,
-      longitude: 18.5284,
-      address_text: '14 Main Rd, Langa, Cape Town',
+      latitude: -33.9475,
+      longitude: 18.5240,
+      address_text: 'GPS -33.9475, 18.5240 · nearest Langa CHC',
+      clinic: 'Langa CHC',
       message: 'Emergency type: Breathing difficult. Patient feeling faint.',
       status: 'active',
       responder_id: null,
@@ -638,3 +654,74 @@ export const supabase: MockSupabase = hasRealConfig
   : createMockSupabaseClient()
 
 export type SupabaseClient = typeof supabase
+
+// ---------- ADMIN USER PROVISIONING ----------
+// Works against the local mock database and against a real Supabase project.
+
+export interface StaffAccountInput {
+  email: string
+  password: string
+  full_name: string
+  role: Profile['role']
+  clinic?: string | null
+  phone?: string | null
+}
+
+export async function createStaffAccount(
+  input: StaffAccountInput,
+): Promise<{ error: { message: string } | null }> {
+  const { email, password, full_name, role, clinic, phone } = input
+
+  if (hasRealConfig) {
+    // Use a throwaway client so provisioning a staff account does not disturb the admin session.
+    const signupClient = createClient(rawUrl!, rawKey!, {
+      auth: { persistSession: false, autoRefreshToken: false, storageKey: 'cc-admin-signup' },
+    })
+    const { error } = await signupClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name, role, clinic: clinic || undefined, phone: phone || undefined },
+      },
+    })
+    return { error: error ? { message: error.message } : null }
+  }
+
+  const db = loadDB()
+  if (db.users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+    return { error: { message: 'An account with this email already exists.' } }
+  }
+  const id = 'usr-' + Math.random().toString(36).substring(2, 9)
+  db.users.push({
+    id,
+    email,
+    password,
+    user_metadata: { full_name, role, clinic: clinic || undefined },
+  })
+  db.profiles.push({
+    id,
+    full_name,
+    role,
+    phone: phone || null,
+    clinic: clinic || null,
+    avatar_url: null,
+    created_at: new Date().toISOString(),
+  })
+  saveDB(db)
+  notifyListeners()
+  return { error: null }
+}
+
+export async function deleteUserAccount(id: string): Promise<{ error: { message: string } | null }> {
+  if (hasRealConfig) {
+    // RLS "profiles_admin_all" permits an admin to remove the profile row.
+    const { error } = await supabase.from('profiles').delete().eq('id', id)
+    return { error: error ? { message: error.message } : null }
+  }
+  const db = loadDB()
+  db.users = db.users.filter(u => u.id !== id)
+  db.profiles = db.profiles.filter(p => p.id !== id)
+  saveDB(db)
+  notifyListeners()
+  return { error: null }
+}

@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
+import { nearestClinic } from '../lib/clinics'
 import type { SosAlert } from '../lib/types'
-import { MapPin, Phone, AlertTriangle, CheckCircle2, ShieldAlert, Navigation, ArrowLeft } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { MapPin, Phone, AlertTriangle, CheckCircle2, ShieldAlert, Navigation, Building2 } from 'lucide-react'
 
 import ambulanceImg from '../assets/images/emergency_response_1792062793067.jpg'
 
@@ -14,11 +14,18 @@ export default function Emergency() {
   const [emergencyType, setEmergencyType] = useState('Breathing difficulty')
   const [message, setMessage] = useState('')
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>({
-    lat: -33.9485,
-    lng: 18.5284,
+    lat: -33.9475,
+    lng: 18.5240,
   })
   const [locError, setLocError] = useState('')
   const [error, setError] = useState('')
+
+  // Nearest community clinic to the patient's current coordinates — the alert is
+  // routed to the clinical staff who work at this facility.
+  const nearest = useMemo(
+    () => (location ? nearestClinic(location.lat, location.lng) : null),
+    [location],
+  )
 
   const captureLocation = () => {
     if (!navigator.geolocation) {
@@ -50,13 +57,17 @@ export default function Emergency() {
     }
     setSubmitting(true)
     const reason = [`Type: ${emergencyType}`, message.trim()].filter(Boolean).join('. ')
+    const target = nearest ?? nearestClinic(-33.9475, 18.5240)
     const { data, error: err } = await supabase
       .from('sos_alerts')
       .insert({
         patient_id: user?.id || 'usr-patient-1',
-        latitude: location?.lat ?? -33.9485,
-        longitude: location?.lng ?? 18.5284,
-        address_text: '14 Main Rd, Langa, Cape Town',
+        latitude: location?.lat ?? target.lat,
+        longitude: location?.lng ?? target.lng,
+        address_text: location
+          ? `GPS ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)} · nearest ${target.name}`
+          : `Near ${target.name}`,
+        clinic: target.name,
         message: reason || 'Urgent medical assistance requested.',
         status: 'active',
       })
@@ -98,8 +109,12 @@ export default function Emergency() {
               Emergency Dispatched Successfully
             </h1>
             <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto leading-relaxed">
-              First responders at Cape Town EMS have received your coordinates and incident details.
-              Stay calm, keep your phone line open, and remain in a safe location.
+              EMS dispatch and the clinical team at{' '}
+              <span className="font-semibold text-slate-800">
+                {alert.clinic || nearest?.name || 'your nearest clinic'}
+              </span>{' '}
+              have received your coordinates and incident details. Stay calm, keep your phone line
+              open, and remain in a safe location.
             </p>
           </div>
 
@@ -114,10 +129,21 @@ export default function Emergency() {
                 {alert.latitude?.toFixed(4)}, {alert.longitude?.toFixed(4)}
               </span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Address Anchor:</span>
-              <span className="font-semibold text-slate-900">14 Main Rd, Langa, Cape Town</span>
+            <div className="flex justify-between gap-3">
+              <span className="text-slate-500">Routed To:</span>
+              <span className="font-semibold text-slate-900 text-right">
+                {alert.clinic || nearest?.name || 'Nearest clinic'}
+              </span>
             </div>
+          </div>
+
+          <div className="p-3 rounded-2xl bg-teal-50 border border-teal-200 text-xs text-teal-900 flex items-center gap-2 text-left">
+            <Building2 size={15} className="shrink-0 text-teal-700" />
+            <span>
+              The clinical team at{' '}
+              <span className="font-semibold">{alert.clinic || nearest?.name || 'your nearest clinic'}</span>{' '}
+              has been alerted and is preparing to receive you.
+            </span>
           </div>
 
           {maps && (
@@ -254,16 +280,26 @@ export default function Emergency() {
             </button>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-slate-700">
-              <MapPin size={16} className="text-red-600 shrink-0" />
-              <span>14 Main Rd, Langa, Cape Town</span>
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-2 text-xs">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-slate-700">
+                <MapPin size={16} className="text-red-600 shrink-0" />
+                <span>GPS location captured</span>
+              </div>
+              {location && (
+                <span className="font-mono text-[11px] text-slate-500 tabular-nums">
+                  ({location.lat.toFixed(4)}, {location.lng.toFixed(4)})
+                </span>
+              )}
             </div>
-            {location && (
-              <span className="font-mono text-[11px] text-slate-500 tabular-nums">
-                ({location.lat.toFixed(4)}, {location.lng.toFixed(4)})
+            <div className="flex items-center gap-2 text-teal-800 border-t border-slate-200 pt-2">
+              <Building2 size={15} className="text-teal-700 shrink-0" />
+              <span>
+                Nearest clinic:{' '}
+                <span className="font-semibold">{nearest ? nearest.name : '—'}</span>
+                {nearest && <span className="text-slate-500"> · {nearest.suburb}</span>}
               </span>
-            )}
+            </div>
           </div>
           {locError && <p className="text-[11px] text-red-600 mt-1">{locError}</p>}
         </div>

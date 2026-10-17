@@ -15,7 +15,7 @@ const STATUSES: Appointment['status'][] = [
 
 export default function StaffAppointments() {
   const { user, profile } = useAuth()
-  const clinic = (user as any)?.user_metadata?.clinic
+  const clinic = profile?.clinic || (user as any)?.user_metadata?.clinic || null
   const role = profile?.role
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [items, setItems] = useState<Appointment[]>([])

@@ -4,11 +4,12 @@ import { supabase } from '../lib/supabase'
 import type { QueueEntry } from '../lib/types'
 import StaffAppointments from './StaffAppointments'
 import QueueManage from './QueueManage'
-import { Users, Stethoscope, Activity, HeartPulse } from 'lucide-react'
+import { ClinicEmergencyAlerts } from '../components/ClinicEmergencyAlerts'
+import { Users, Stethoscope, HeartPulse } from 'lucide-react'
 
 export default function NurseDashboard() {
   const { profile, user } = useAuth()
-  const clinic = (user as any)?.user_metadata?.clinic || (profile?.clinic ?? null)
+  const clinic = profile?.clinic || (user as any)?.user_metadata?.clinic || null
   const [tab, setTab] = useState<'queue' | 'appts'>('queue')
   const [waiting, setWaiting] = useState(0)
   const [checkedIn, setCheckedIn] = useState(0)
@@ -64,6 +65,8 @@ export default function NurseDashboard() {
           </div>
         </div>
       </div>
+
+      <ClinicEmergencyAlerts clinic={clinic} />
 
       {/* Segmented Control */}
       <div className="p-1 rounded-2xl bg-slate-200/80 inline-flex w-full sm:w-auto">

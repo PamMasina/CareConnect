@@ -16,18 +16,24 @@ import {
 const ACTIVE: SosAlert['status'][] = ['active', 'acknowledged']
 
 export default function FirstResponderInbox() {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const [alerts, setAlerts] = useState<SosAlert[]>([])
   const [notes, setNotes] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
 
+  // Clinical staff only receive alerts routed to their own clinic; EMS sees every alert.
+  const scopeClinic =
+    profile?.role === 'doctor' || profile?.role === 'nurse' ? profile.clinic || null : null
+
   const load = async () => {
     setLoading(true)
-    const { data } = await supabase
+    let query = supabase
       .from('sos_alerts')
       .select('*, patient:profiles!sos_alerts_patient_id_fkey(*)')
       .in('status', ACTIVE)
       .order('created_at', { ascending: false })
+    if (scopeClinic) query = query.eq('clinic', scopeClinic)
+    const { data } = await query
     setAlerts((data as any) ?? [])
     setLoading(false)
   }
@@ -41,7 +47,8 @@ export default function FirstResponderInbox() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scopeClinic])
 
   const acknowledge = async (id: string) => {
     await supabase
@@ -81,7 +88,9 @@ export default function FirstResponderInbox() {
             Live SOS Emergency Inbox
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Real-time emergency telemetry dispatched from patients across Cape Town
+            {scopeClinic
+              ? `Emergency cases routed to ${scopeClinic}`
+              : 'Real-time emergency telemetry dispatched from patients across Cape Town'}
           </p>
         </div>
 

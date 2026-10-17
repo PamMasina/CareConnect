@@ -60,6 +60,7 @@ export interface SosAlert {
   latitude: number | null
   longitude: number | null
   address_text: string | null
+  clinic: string | null
   message: string | null
   status: SosStatus
   responder_id: string | null

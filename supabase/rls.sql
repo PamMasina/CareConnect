@@ -84,7 +84,7 @@ create policy "sos_insert_patient" on public.sos_alerts for insert to authentica
 create policy "sos_update" on public.sos_alerts for update to authenticated
   using (
     patient_id = auth.uid() or
-    public.current_user_role() in ('first_responder','admin')
+    public.current_user_role() in ('first_responder','admin','doctor','nurse')
   );
 
 -- patient_medical_records

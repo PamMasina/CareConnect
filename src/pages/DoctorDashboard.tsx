@@ -4,11 +4,12 @@ import { supabase } from '../lib/supabase'
 import type { Appointment } from '../lib/types'
 import StaffAppointments from './StaffAppointments'
 import QueueManage from './QueueManage'
-import { Users, ClipboardList, Stethoscope, Clock, CheckCircle2 } from 'lucide-react'
+import { ClinicEmergencyAlerts } from '../components/ClinicEmergencyAlerts'
+import { Users, ClipboardList, Stethoscope } from 'lucide-react'
 
 export default function DoctorDashboard() {
   const { profile, user } = useAuth()
-  const clinic = (user as any)?.user_metadata?.clinic || (profile?.clinic ?? null)
+  const clinic = profile?.clinic || (user as any)?.user_metadata?.clinic || null
   const [tab, setTab] = useState<'appts' | 'queue'>('appts')
   const [remaining, setRemaining] = useState(0)
   const [todayCount, setTodayCount] = useState(0)
@@ -69,6 +70,8 @@ export default function DoctorDashboard() {
           </div>
         </div>
       </div>
+
+      <ClinicEmergencyAlerts clinic={clinic} />
 
       {/* Tab Segmented Control */}
       <div className="p-1 rounded-2xl bg-slate-200/80 inline-flex w-full sm:w-auto">

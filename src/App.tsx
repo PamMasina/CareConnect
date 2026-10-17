@@ -74,18 +74,18 @@ function AppRoutes() {
         <Route path="/queue" element={<QueueStatus />} />
 
         {/* Protected Patient routes */}
-        <Route path="/appointments" element={<ProtectedRoute roles={['patient', 'admin']}><BookAppointment /></ProtectedRoute>} />
-        <Route path="/my-appointments" element={<ProtectedRoute roles={['patient', 'admin']}><MyAppointments /></ProtectedRoute>} />
+        <Route path="/appointments" element={<ProtectedRoute roles={['patient']}><BookAppointment /></ProtectedRoute>} />
+        <Route path="/my-appointments" element={<ProtectedRoute roles={['patient']}><MyAppointments /></ProtectedRoute>} />
         <Route path="/medical-record" element={<ProtectedRoute><MedicalRecord /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
 
         {/* Protected Clinical Staff routes */}
-        <Route path="/staff" element={<ProtectedRoute roles={['doctor', 'nurse', 'admin']}><StaffConsole /></ProtectedRoute>} />
+        <Route path="/staff" element={<ProtectedRoute roles={['doctor', 'nurse']}><StaffConsole /></ProtectedRoute>} />
 
-        {/* Protected First Responder & Staff SOS Inbox */}
-        <Route path="/sos-inbox" element={<ProtectedRoute roles={['first_responder', 'admin', 'nurse', 'doctor']}><FirstResponderInbox /></ProtectedRoute>} />
+        {/* Protected First Responder & Clinical Staff SOS Inbox */}
+        <Route path="/sos-inbox" element={<ProtectedRoute roles={['first_responder', 'nurse', 'doctor']}><FirstResponderInbox /></ProtectedRoute>} />
 
         {/* Protected Admin Console */}
         <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />

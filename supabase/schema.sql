@@ -20,12 +20,13 @@ create table if not exists public.profiles (
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer as $$
 begin
-  insert into public.profiles (id, full_name, role, phone)
+  insert into public.profiles (id, full_name, role, phone, clinic)
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email,'@',1)),
     coalesce(new.raw_user_meta_data->>'role', 'patient'),
-    new.raw_user_meta_data->>'phone'
+    new.raw_user_meta_data->>'phone',
+    new.raw_user_meta_data->>'clinic'
   )
   on conflict (id) do nothing;
   return new;
@@ -92,6 +93,8 @@ create table if not exists public.sos_alerts (
   latitude double precision,
   longitude double precision,
   address_text text,
+  -- name of the community clinic nearest to the patient at the time of dispatch
+  clinic text,
   message text,
   status text not null default 'active'
     check (status in ('active','acknowledged','resolved','cancelled')),
@@ -102,7 +105,12 @@ create table if not exists public.sos_alerts (
   created_at timestamptz not null default now()
 );
 
+-- migration for existing databases: add clinic if missing
+alter table public.sos_alerts
+  add column if not exists clinic text;
+
 create index if not exists sos_alerts_status_idx on public.sos_alerts (status);
+create index if not exists sos_alerts_clinic_idx on public.sos_alerts (clinic);
 create index if not exists sos_alerts_created_idx on public.sos_alerts (created_at desc);
 
 -- ---------- clinic_settings ----------
