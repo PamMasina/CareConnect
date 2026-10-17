@@ -134,37 +134,41 @@ export default function Profile() {
 
       {/* Navigation Sections */}
       <div className="bg-white rounded-3xl border border-slate-200/80 p-2 shadow-xs divide-y divide-slate-100">
-        <Link
-          to="/medical-record"
-          className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 transition-colors group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition-colors">
-              <FileText size={18} />
-            </div>
-            <div>
-              <p className="font-bold text-sm text-slate-900">Clinical Medical Record</p>
-              <p className="text-xs text-slate-500">View allergies, chronic prescriptions, and visit histories</p>
-            </div>
-          </div>
-          <ChevronRight size={16} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-        </Link>
+        {role === 'patient' && (
+          <>
+            <Link
+              to="/medical-record"
+              className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                  <FileText size={18} />
+                </div>
+                <div>
+                  <p className="font-bold text-sm text-slate-900">Clinical Medical Record</p>
+                  <p className="text-xs text-slate-500">View allergies, chronic prescriptions, and visit histories</p>
+                </div>
+              </div>
+              <ChevronRight size={16} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
 
-        <Link
-          to="/my-appointments"
-          className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 transition-colors group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-              <CalendarCheck size={18} />
-            </div>
-            <div>
-              <p className="font-bold text-sm text-slate-900">Appointment History</p>
-              <p className="text-xs text-slate-500">Upcoming, in-progress, and past clinic consultations</p>
-            </div>
-          </div>
-          <ChevronRight size={16} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-        </Link>
+            <Link
+              to="/my-appointments"
+              className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <CalendarCheck size={18} />
+                </div>
+                <div>
+                  <p className="font-bold text-sm text-slate-900">Appointment History</p>
+                  <p className="text-xs text-slate-500">Upcoming, in-progress, and past clinic consultations</p>
+                </div>
+              </div>
+              <ChevronRight size={16} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </>
+        )}
 
         <Link
           to="/edit-profile"

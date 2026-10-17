@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Profile, Service, Appointment, QueueEntry, SosAlert } from './types'
+import type { Profile, Service, Appointment, QueueEntry, SosAlert, PatientMedicalRecord } from './types'
 
 const rawUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
@@ -35,6 +35,7 @@ interface MockDB {
   queue_entries: QueueEntry[]
   sos_alerts: SosAlert[]
   clinic_settings: Record<string, any>[]
+  patient_medical_records: PatientMedicalRecord[]
 }
 
 export interface QueryResult<T = any> {
@@ -214,14 +215,52 @@ function getInitialDB(): MockDB {
     },
   ]
 
-  return { users, profiles, services, appointments, queue_entries, sos_alerts, clinic_settings }
+  const patient_medical_records: PatientMedicalRecord[] = [
+    {
+      id: 'mr-patient-1',
+      patient_id: patientId,
+      allergies: ['Penicillin'],
+      medications: [
+        {
+          name: 'Lisinopril',
+          dosage: '10mg',
+          frequency: 'once daily',
+          instructions: 'Take in the morning with food',
+          prescribed_by: 'Dr. Sipho Dlamini',
+          prescribed_at: now.toISOString(),
+        },
+      ],
+      chronic_conditions: ['Hypertension'],
+      medical_notes: 'Monitored for hypertension. Review at next chronic medication visit.',
+      updated_by: doctorId,
+      updated_at: now.toISOString(),
+      created_at: now.toISOString(),
+    },
+  ]
+
+  return {
+    users,
+    profiles,
+    services,
+    appointments,
+    queue_entries,
+    sos_alerts,
+    clinic_settings,
+    patient_medical_records,
+  }
 }
 
 function loadDB(): MockDB {
   if (typeof window === 'undefined') return getInitialDB()
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return JSON.parse(raw)
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      // Tables added after a user's data was first written are backfilled in place so
+      // existing local accounts are never discarded.
+      if (!Array.isArray(parsed.patient_medical_records)) parsed.patient_medical_records = []
+      return parsed as MockDB
+    }
   } catch (e) {
     console.warn('Failed to parse mock db from localStorage', e)
   }
@@ -541,6 +580,7 @@ function createQueryBuilder(tableName: keyof MockDB): QueryBuilder {
       try {
         const db = loadDB()
         let tableArray = (db[tableName] as any[]) || []
+        if (!db[tableName]) (db as any)[tableName] = tableArray
 
         // Handle insert
         if (insertData) {

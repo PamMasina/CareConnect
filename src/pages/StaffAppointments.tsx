@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Appointment } from '../lib/types'
-import { Calendar, Clock, User, Save, RotateCw, CheckCircle2 } from 'lucide-react'
+import { Calendar, Clock, User, Save, RotateCw, CheckCircle2, FileText } from 'lucide-react'
+import { PatientRecordEditor } from '../components/PatientRecordEditor'
 
 const STATUSES: Appointment['status'][] = [
   'booked',
@@ -22,6 +23,7 @@ export default function StaffAppointments() {
   const [loading, setLoading] = useState(true)
   const [notesDraft, setNotesDraft] = useState<Record<string, string>>({})
   const [savingId, setSavingId] = useState<string | null>(null)
+  const [record, setRecord] = useState<{ id: string; name: string } | null>(null)
 
   const load = async () => {
     setLoading(true)
@@ -167,7 +169,17 @@ export default function StaffAppointments() {
                 </div>
 
                 {/* Status Switcher Dropdown */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setRecord({ id: a.patient_id, name: a.patient?.full_name ?? 'Walk-in Patient' })
+                    }
+                    className="px-3 py-1.5 rounded-xl border border-teal-200 bg-teal-50 text-teal-800 text-[11px] font-bold hover:bg-teal-100 transition-colors flex items-center gap-1.5"
+                  >
+                    <FileText size={13} />
+                    <span>Patient Record</span>
+                  </button>
                   <span className="text-[11px] font-semibold text-slate-400">Update:</span>
                   <select
                     value={a.status}
@@ -217,6 +229,14 @@ export default function StaffAppointments() {
           </div>
         )}
       </div>
+
+      {record && (
+        <PatientRecordEditor
+          patientId={record.id}
+          patientName={record.name}
+          onClose={() => setRecord(null)}
+        />
+      )}
     </div>
   )
 }
