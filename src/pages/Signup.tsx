@@ -137,7 +137,7 @@ export default function Signup() {
         >
           <span>← Back to CareConnect Home</span>
         </Link>
-        <span className="text-xs text-slate-400">Cape Town Health Network</span>
+        <span className="text-xs text-slate-400">CareConnect Health Platform</span>
       </div>
 
       <div className="max-w-xl w-full bg-white rounded-3xl shadow-xl border border-slate-200/80 p-6 sm:p-10 space-y-6">
@@ -149,7 +149,7 @@ export default function Signup() {
             </div>
             <div>
               <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Create Your CareConnect Account</h1>
-              <p className="text-xs text-slate-500">Western Cape Public Health Network</p>
+              <p className="text-xs text-slate-500">CareConnect Health Platform</p>
             </div>
           </div>
           <span className="text-xs font-semibold px-3 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200">

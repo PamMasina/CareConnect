@@ -35,7 +35,7 @@ export default function Login() {
         >
           <span>← Back to CareConnect Home</span>
         </Link>
-        <span className="text-xs text-slate-400">Cape Town Health Network</span>
+        <span className="text-xs text-slate-400">CareConnect Health Platform</span>
       </div>
 
       <div className="max-w-5xl w-full bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
@@ -56,7 +56,7 @@ export default function Login() {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-medium text-emerald-200 mb-6">
               <Activity size={14} className="text-emerald-400" />
-              <span>Western Cape Public Health Network</span>
+              <span>CareConnect Health Platform</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
               Accessible, Dignified Healthcare for Every Community

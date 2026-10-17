@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import type { Appointment } from '../lib/types'
+import type { Appointment, PatientMedicalRecord } from '../lib/types'
 import {
   FileText,
   Download,
@@ -13,32 +13,40 @@ import {
   Building2,
   Clock,
   Printer,
+  Activity,
 } from 'lucide-react'
 
 export default function MedicalRecord() {
   const { user, profile } = useAuth()
   const [last, setLast] = useState<Appointment | null>(null)
+  const [medicalRecord, setMedicalRecord] = useState<PatientMedicalRecord | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!user) return
-    supabase
-      .from('appointments')
-      .select('*, service:services(*), clinic:profiles!appointments_doctor_id_fkey(*)')
-      .eq('patient_id', user.id)
-      .order('scheduled_at', { ascending: false })
-      .limit(1)
-      .then(({ data }) => {
-        setLast((data as any)?.[0] ?? null)
-        setLoading(false)
-      })
+    Promise.all([
+      supabase
+        .from('appointments')
+        .select('*, service:services(*), clinic:profiles!appointments_doctor_id_fkey(*)')
+        .eq('patient_id', user.id)
+        .order('scheduled_at', { ascending: false })
+        .limit(1),
+      supabase
+        .from('patient_medical_records')
+        .select('*')
+        .eq('patient_id', user.id)
+        .maybeSingle(),
+    ]).then(([appts, mr]) => {
+      setLast((appts.data as any)?.[0] ?? null)
+      setMedicalRecord((mr.data as any) ?? null)
+      setLoading(false)
+    })
   }, [user])
 
-  const allergies = ['Penicillin', 'Sulphonamides (Mild)']
-  const medications = [
-    { name: 'Metformin 500mg', instructions: 'Twice daily with meals', doctor: 'Dr. S. Dlamini' },
-    { name: 'Aspirin 75mg', instructions: 'Once daily in the morning', doctor: 'Dr. S. Dlamini' },
-  ]
+  const allergies = medicalRecord?.allergies ?? []
+  const medications = (medicalRecord?.medications as any[]) ?? []
+  const chronicConditions = medicalRecord?.chronic_conditions ?? []
+  const medicalNotes = medicalRecord?.medical_notes
 
   const handleDownload = () => window.print()
 
@@ -49,13 +57,13 @@ export default function MedicalRecord() {
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs text-teal-700 font-medium mb-1">
             <FileText size={14} />
-            <span>Western Cape Patient Health Record</span>
+            <span>Patient Health Record</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
             Clinical Health Summary
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Verified patient identifier: <span className="font-mono font-bold text-slate-800">A1234Z</span>
+            Patient ID: <span className="font-mono font-bold text-slate-800">{user?.id?.slice(0, 8).toUpperCase()}</span>
           </p>
         </div>
 
@@ -103,7 +111,7 @@ export default function MedicalRecord() {
         {loading && <p className="text-xs text-slate-500">Loading consultation record…</p>}
 
         {!loading && !last && (
-          <p className="text-xs text-slate-500">No previous consultation visits recorded.</p>
+          <p className="text-xs text-slate-500">No consultation visits recorded yet. Your doctor will add details after your consultation.</p>
         )}
 
         {last && (
@@ -151,19 +159,20 @@ export default function MedicalRecord() {
           <AlertCircle size={18} className="text-red-600" />
           <h2 className="font-bold text-base text-slate-900">Recorded Allergies & Adverse Reactions</h2>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {allergies.map(a => (
-            <span
-              key={a}
-              className="bg-red-50 text-red-800 border border-red-200 text-xs font-semibold px-3 py-1.5 rounded-xl"
-            >
-              ⚠ {a}
-            </span>
-          ))}
-        </div>
-        <p className="text-[11px] text-slate-400">
-          Notified to all attending practitioners and dispensing pharmacies across the Western Cape network.
-        </p>
+        {allergies.length === 0 ? (
+          <p className="text-xs text-slate-500">No allergies recorded.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {allergies.map(a => (
+              <span
+                key={a}
+                className="bg-red-50 text-red-800 border border-red-200 text-xs font-semibold px-3 py-1.5 rounded-xl"
+              >
+                ⚠ {a}
+              </span>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Active Medications */}
@@ -173,20 +182,30 @@ export default function MedicalRecord() {
           <h2 className="font-bold text-base text-slate-900">Active Prescriptions & Chronic Medication</h2>
         </div>
 
-        <div className="space-y-2.5">
-          {medications.map(m => (
-            <div
-              key={m.name}
-              className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
-            >
-              <div>
-                <p className="font-bold text-slate-900 text-sm">{m.name}</p>
-                <p className="text-slate-600 mt-0.5">{m.instructions}</p>
+        {medications.length === 0 ? (
+          <p className="text-xs text-slate-500">No active prescriptions recorded.</p>
+        ) : (
+          <div className="space-y-2.5">
+            {medications.map((m, i) => (
+              <div
+                key={i}
+                className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
+              >
+                <div>
+                  <p className="font-bold text-slate-900 text-sm">
+                    {m.name}
+                    {m.dosage && <span className="font-normal text-slate-700"> {m.dosage}</span>}
+                  </p>
+                  {m.frequency && <p className="text-slate-600 mt-0.5">{m.frequency}</p>}
+                  {m.instructions && <p className="text-slate-600 mt-0.5">{m.instructions}</p>}
+                </div>
+                {m.prescribed_by && (
+                  <span className="text-[11px] text-slate-400">Prescribing: {m.prescribed_by}</span>
+                )}
               </div>
-              <span className="text-[11px] text-slate-400">Prescribing: {m.doctor}</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   )

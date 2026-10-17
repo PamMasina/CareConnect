@@ -24,7 +24,7 @@ export default function StaffConsole() {
         </div>
         <h1 className="text-2xl font-extrabold tracking-tight">Clinical Staff Console</h1>
         <p className="text-xs text-slate-300 mt-1">
-          {profile?.clinic || 'Cape Town Health Network'} · Live consultation roster & queue dispatch
+          {profile?.clinic || 'CareConnect'} · Live consultation roster & queue dispatch
         </p>
       </div>
 

@@ -99,6 +99,39 @@ create index if not exists sos_alerts_status_idx on public.sos_alerts (status);
 create index if not exists sos_alerts_created_idx on public.sos_alerts (created_at desc);
 
 -- ---------- clinic_settings ----------
+-- ---------- patient_medical_records ----------
+create table if not exists public.patient_medical_records (
+  id uuid primary key default uuid_generate_v4(),
+  patient_id uuid not null references public.profiles (id) on delete cascade unique,
+  allergies text[] not null default '{}',
+  medications jsonb not null default '[]',
+  chronic_conditions text[] not null default '{}',
+  medical_notes text,
+  updated_by uuid references public.profiles (id),
+  updated_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists patient_medical_records_patient_idx on public.patient_medical_records (patient_id);
+
+-- auto-create empty medical record when a patient profile is created
+create or replace function public.handle_new_patient_medical_record()
+returns trigger language plpgsql security definer as $$
+begin
+  if new.role = 'patient' then
+    insert into public.patient_medical_records (patient_id)
+    values (new.id)
+    on conflict (patient_id) do nothing;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_patient_profile_created on public.profiles;
+create trigger on_patient_profile_created
+  after insert on public.profiles
+  for each row execute procedure public.handle_new_patient_medical_record();
+
 create table if not exists public.clinic_settings (
   key text primary key,
   value jsonb not null default '{}'::jsonb,
@@ -106,5 +139,5 @@ create table if not exists public.clinic_settings (
 );
 
 insert into public.clinic_settings (key, value)
-values ('clinic', '{"name":"Cape Town Community Clinic","address":"123 Long Street, Cape Town","phone":"+27 21 000 0000","hours":"Mon-Fri 08:00-17:00"}'::jsonb)
+values ('clinic', '{"name":"CareConnect Community Clinic","address":"123 Long Street","phone":"+27 21 000 0000","hours":"Mon-Fri 08:00-17:00"}'::jsonb)
 on conflict (key) do nothing;

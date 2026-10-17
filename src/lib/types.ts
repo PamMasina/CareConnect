@@ -69,6 +69,25 @@ export interface SosAlert {
   patient?: Profile | null
 }
 
+export interface PatientMedicalRecord {
+  id: string
+  patient_id: string
+  allergies: string[]
+  medications: Array<{
+    name: string
+    dosage?: string
+    frequency?: string
+    instructions?: string
+    prescribed_by?: string
+    prescribed_at?: string
+  }>
+  chronic_conditions: string[]
+  medical_notes: string | null
+  updated_by: string | null
+  updated_at: string
+  created_at: string
+}
+
 export interface ClinicSettings {
   name: string
   address: string

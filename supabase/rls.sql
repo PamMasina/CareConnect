@@ -87,6 +87,33 @@ create policy "sos_update" on public.sos_alerts for update to authenticated
     public.current_user_role() in ('first_responder','admin')
   );
 
+-- patient_medical_records
+alter table public.patient_medical_records enable row level security;
+
+drop policy if exists "medical_records_select" on public.patient_medical_records;
+drop policy if exists "medical_records_insert" on public.patient_medical_records;
+drop policy if exists "medical_records_update" on public.patient_medical_records;
+drop policy if exists "medical_records_delete" on public.patient_medical_records;
+
+create policy "medical_records_select" on public.patient_medical_records for select to authenticated
+  using (
+    patient_id = auth.uid() or
+    public.current_user_role() in ('doctor','nurse','admin')
+  );
+
+create policy "medical_records_insert" on public.patient_medical_records for insert to authenticated
+  with check (
+    patient_id = auth.uid() or
+    public.current_user_role() in ('doctor','nurse','admin')
+  );
+
+create policy "medical_records_update" on public.patient_medical_records for update to authenticated
+  using (public.current_user_role() in ('doctor','nurse','admin'))
+  with check (public.current_user_role() in ('doctor','nurse','admin'));
+
+create policy "medical_records_delete" on public.patient_medical_records for delete to authenticated
+  using (public.current_user_role() = 'admin');
+
 -- clinic settings
 drop policy if exists "settings_select" on public.clinic_settings;
 drop policy if exists "settings_admin_write" on public.clinic_settings;
