@@ -30,10 +30,12 @@ export default function DoctorDashboard() {
       end.setHours(23, 59, 59, 999)
       const { data } = await supabase
         .from('appointments')
-        .select('*')
+        .select('*, service:services(*)')
         .gte('scheduled_at', start.toISOString())
         .lte('scheduled_at', end.toISOString())
-      const rows = (data as Appointment[]) ?? []
+      let rows = (data as Appointment[]) ?? []
+      if (clinic) rows = rows.filter(a => !a.notes || a.notes.includes(clinic))
+      rows = rows.filter((a: any) => !a.service || a.service.provider_role === profile?.role)
       setTodayCount(rows.length)
       setRemaining(rows.filter(r => r.status !== 'completed').length)
     }

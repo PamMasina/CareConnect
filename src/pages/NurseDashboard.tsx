@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import type { QueueEntry } from '../lib/types'
 import StaffAppointments from './StaffAppointments'
 import QueueManage from './QueueManage'
 import { ClinicEmergencyAlerts } from '../components/ClinicEmergencyAlerts'
@@ -26,9 +25,13 @@ export default function NurseDashboard() {
     const load = async () => {
       const { data } = await supabase
         .from('queue_entries')
-        .select('*')
+        .select('*, appointment:appointments(*, service:services(*))')
         .in('status', ['waiting', 'called', 'in_service'])
-      const rows = (data as QueueEntry[]) ?? []
+      let rows = (data as any[]) ?? []
+      if (clinic) rows = rows.filter((e: any) => !e.appointment?.notes || e.appointment.notes.includes(clinic))
+      rows = rows.filter(
+        (e: any) => !e.appointment?.service || e.appointment.service.provider_role === profile?.role,
+      )
       setWaiting(rows.filter(r => r.status === 'waiting').length)
       setCheckedIn(rows.length)
     }

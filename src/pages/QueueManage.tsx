@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { QueueEntry } from '../lib/types'
 import { Users, PhoneForwarded, Play, CheckCircle2, RotateCw, Clock, ArrowRight } from 'lucide-react'
 
 export default function QueueManage() {
+  const { user, profile } = useAuth()
+  const clinic = profile?.clinic || (user as any)?.user_metadata?.clinic || null
+  const role = profile?.role
   const [entries, setEntries] = useState<QueueEntry[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -11,10 +15,19 @@ export default function QueueManage() {
     setLoading(true)
     const { data } = await supabase
       .from('queue_entries')
-      .select('*, patient:profiles!queue_entries_patient_id_fkey(*), appointment:appointments(*)')
+      .select(
+        '*, patient:profiles!queue_entries_patient_id_fkey(*), appointment:appointments(*, service:services(*))',
+      )
       .in('status', ['waiting', 'called', 'in_service'])
       .order('checked_in_at')
-    setEntries((data as any) ?? [])
+    let rows = (data as any) ?? []
+    // Same clinic / provider scoping as the appointment console: clinical staff only
+    // ever see their own facility's waiting room.
+    if (clinic) rows = rows.filter((e: any) => !e.appointment?.notes || e.appointment.notes.includes(clinic))
+    if (role === 'doctor' || role === 'nurse') {
+      rows = rows.filter((e: any) => !e.appointment?.service || e.appointment.service.provider_role === role)
+    }
+    setEntries(rows)
     setLoading(false)
   }
 
@@ -47,6 +60,7 @@ export default function QueueManage() {
         <div>
           <h2 className="text-lg font-bold text-slate-900">Live Waiting Room Queue</h2>
           <p className="text-xs text-slate-500">
+            {clinic ? `${clinic} · ` : ''}
             <span className="font-bold text-teal-700 tabular-nums">{waitingCount}</span> patients currently waiting to be called
           </p>
         </div>
