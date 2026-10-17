@@ -43,9 +43,16 @@ create table if not exists public.services (
   name text not null,
   description text,
   duration_minutes int not null default 15,
+  provider_role text not null default 'doctor'
+    check (provider_role in ('doctor','nurse')),
   active boolean not null default true,
   created_at timestamptz not null default now()
 );
+
+-- migration for existing databases: add provider_role if missing
+alter table public.services
+  add column if not exists provider_role text not null default 'doctor'
+    check (provider_role in ('doctor','nurse'));
 
 -- ---------- appointments ----------
 create table if not exists public.appointments (

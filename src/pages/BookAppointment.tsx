@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Service } from '../lib/types'
@@ -14,6 +14,7 @@ import {
   MapPin,
   Building2,
   Stethoscope,
+  HeartPulse,
 } from 'lucide-react'
 
 const TIMES = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00']
@@ -21,9 +22,13 @@ const TIMES = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '1
 export default function BookAppointment() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [step, setStep] = useState(1)
+  const [searchParams] = useSearchParams()
+  const clinicParam = searchParams.get('clinic')
+  const preselectedClinic = clinicParam ? CLINICS.find(c => c.id === clinicParam) ?? null : null
+
+  const [step, setStep] = useState(preselectedClinic ? 2 : 1)
   const [services, setServices] = useState<Service[]>([])
-  const [clinic, setClinic] = useState<Clinic | null>(CLINICS[0] || null)
+  const [clinic, setClinic] = useState<Clinic | null>(preselectedClinic ?? CLINICS[0] ?? null)
   const [serviceId, setServiceId] = useState('')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
@@ -127,7 +132,7 @@ export default function BookAppointment() {
             )}
             <div>
               <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Book Clinic Appointment</h1>
-              <p className="text-xs text-slate-500">Western Cape Public Health Services</p>
+              <p className="text-xs text-slate-500">CareConnect Health Platform</p>
             </div>
           </div>
           <span className="text-xs font-semibold px-3 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
@@ -265,6 +270,7 @@ export default function BookAppointment() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {services.map(s => {
               const isSelected = serviceId === s.id
+              const isNurse = s.provider_role === 'nurse'
               return (
                 <button
                   key={s.id}
@@ -281,8 +287,12 @@ export default function BookAppointment() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center shrink-0">
-                        <Stethoscope size={16} />
+                      <div
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                          isNurse ? 'bg-cyan-100 text-cyan-700' : 'bg-teal-100 text-teal-700'
+                        }`}
+                      >
+                        {isNurse ? <HeartPulse size={16} /> : <Stethoscope size={16} />}
                       </div>
                       <h3 className="font-bold text-sm text-slate-900">{s.name}</h3>
                     </div>
@@ -293,6 +303,18 @@ export default function BookAppointment() {
                   <p className="text-xs text-slate-500 mt-2 pl-10.5 leading-relaxed">
                     {s.description || 'Routine public healthcare consultation.'}
                   </p>
+                  <div className="mt-2.5 pl-10.5">
+                    <span
+                      className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                        isNurse
+                          ? 'bg-cyan-50 text-cyan-800 border-cyan-200'
+                          : 'bg-teal-50 text-teal-800 border-teal-200'
+                      }`}
+                    >
+                      {isNurse ? <HeartPulse size={11} /> : <Stethoscope size={11} />}
+                      {isNurse ? 'Nurse' : 'Doctor'}
+                    </span>
+                  </div>
                 </button>
               )
             })}

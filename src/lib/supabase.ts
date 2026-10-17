@@ -104,11 +104,11 @@ function getInitialDB(): MockDB {
   const adminId = 'usr-admin-1'
 
   const services: Service[] = [
-    { id: 'svc-1', name: 'General Consultation', description: 'Routine check-up with a doctor', duration_minutes: 20, active: true, created_at: now.toISOString() },
-    { id: 'svc-2', name: 'Chronic Medication Review', description: 'Follow-up for chronic conditions', duration_minutes: 15, active: true, created_at: now.toISOString() },
-    { id: 'svc-3', name: 'Vaccination', description: 'Immunisation appointment', duration_minutes: 10, active: true, created_at: now.toISOString() },
-    { id: 'svc-4', name: 'Maternal Health Check', description: 'Prenatal/postnatal care', duration_minutes: 30, active: true, created_at: now.toISOString() },
-    { id: 'svc-5', name: 'Emergency Triage', description: 'Urgent same-day assessment', duration_minutes: 15, active: true, created_at: now.toISOString() },
+    { id: 'svc-1', name: 'General Consultation', description: 'Routine check-up with a doctor', duration_minutes: 20, provider_role: 'doctor', active: true, created_at: now.toISOString() },
+    { id: 'svc-2', name: 'Chronic Medication Review', description: 'Follow-up for chronic conditions', duration_minutes: 15, provider_role: 'doctor', active: true, created_at: now.toISOString() },
+    { id: 'svc-3', name: 'Vaccination', description: 'Immunisation appointment', duration_minutes: 10, provider_role: 'nurse', active: true, created_at: now.toISOString() },
+    { id: 'svc-4', name: 'Maternal Health Check', description: 'Prenatal/postnatal care', duration_minutes: 30, provider_role: 'nurse', active: true, created_at: now.toISOString() },
+    { id: 'svc-5', name: 'Emergency Triage', description: 'Urgent same-day assessment', duration_minutes: 15, provider_role: 'nurse', active: true, created_at: now.toISOString() },
   ]
 
   const users: MockUser[] = [

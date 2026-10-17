@@ -15,6 +15,7 @@ export interface Service {
   name: string
   description?: string | null
   duration_minutes: number
+  provider_role: 'doctor' | 'nurse'
   active: boolean
   created_at: string
 }

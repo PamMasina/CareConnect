@@ -16,6 +16,7 @@ export default function AdminDashboard() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [newService, setNewService] = useState('')
+  const [newServiceRole, setNewServiceRole] = useState<'doctor' | 'nurse'>('doctor')
   const [loading, setLoading] = useState(true)
 
   const load = async () => {
@@ -44,9 +45,11 @@ export default function AdminDashboard() {
       name: newService.trim(),
       description: 'Routine healthcare clinical service.',
       duration_minutes: 20,
+      provider_role: newServiceRole,
       active: true,
     })
     setNewService('')
+    setNewServiceRole('doctor')
     load()
   }
 
@@ -96,13 +99,21 @@ export default function AdminDashboard() {
             <span className="text-xs text-slate-400 font-semibold">{services.length} active</span>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <input
               value={newService}
               onChange={e => setNewService(e.target.value)}
               placeholder="e.g. Pediatric Screening"
-              className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+              className="flex-1 min-w-[160px] bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
             />
+            <select
+              value={newServiceRole}
+              onChange={e => setNewServiceRole(e.target.value as 'doctor' | 'nurse')}
+              className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+            >
+              <option value="doctor">Doctor</option>
+              <option value="nurse">Nurse</option>
+            </select>
             <button
               onClick={addService}
               className="px-3.5 py-2 bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-teal-700 transition-colors shadow-xs flex items-center gap-1 shrink-0"
@@ -119,7 +130,18 @@ export default function AdminDashboard() {
                 className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-200/70 flex items-center justify-between gap-3"
               >
                 <div>
-                  <h3 className="font-bold text-xs text-slate-900">{s.name}</h3>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="font-bold text-xs text-slate-900">{s.name}</h3>
+                    <span
+                      className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border ${
+                        s.provider_role === 'nurse'
+                          ? 'bg-cyan-50 text-cyan-800 border-cyan-200'
+                          : 'bg-teal-50 text-teal-800 border-teal-200'
+                      }`}
+                    >
+                      {s.provider_role}
+                    </span>
+                  </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">
                     {s.duration_minutes} min duration ·{' '}
                     <span className={s.active ? 'text-emerald-700 font-semibold' : 'text-slate-400'}>

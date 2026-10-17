@@ -14,8 +14,9 @@ const STATUSES: Appointment['status'][] = [
 ]
 
 export default function StaffAppointments() {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const clinic = (user as any)?.user_metadata?.clinic
+  const role = profile?.role
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [items, setItems] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
@@ -36,6 +37,11 @@ export default function StaffAppointments() {
       .order('scheduled_at')
     let rows = (data as any) ?? []
     if (clinic) rows = rows.filter((a: any) => !a.notes || a.notes.includes(clinic))
+    // Doctors only see doctor-provided services; nurses only see nurse-provided services.
+    // Appointments without a linked service remain visible to both clinical roles.
+    if (role === 'doctor' || role === 'nurse') {
+      rows = rows.filter((a: any) => !a.service || a.service.provider_role === role)
+    }
     setItems(rows)
     setLoading(false)
   }
@@ -135,6 +141,17 @@ export default function StaffAppointments() {
 
                   <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-500 mt-1">
                     <span className="font-medium text-slate-700">{a.service?.name || 'General Consultation'}</span>
+                    {a.service?.provider_role && (
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                          a.service.provider_role === 'nurse'
+                            ? 'bg-cyan-50 text-cyan-800 border-cyan-200'
+                            : 'bg-teal-50 text-teal-800 border-teal-200'
+                        }`}
+                      >
+                        {a.service.provider_role}
+                      </span>
+                    )}
                     <span>·</span>
                     <span className="flex items-center gap-1 font-mono text-slate-700 tabular-nums">
                       <Clock size={12} className="text-teal-600" />

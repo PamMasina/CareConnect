@@ -156,7 +156,7 @@ export default function Clinics() {
                 </a>
 
                 <Link
-                  to="/appointments"
+                  to={`/appointments?clinic=${clinic.id}`}
                   className="px-3.5 py-1.5 rounded-xl bg-teal-600 text-white hover:bg-teal-700 text-xs font-semibold flex items-center gap-1 transition-colors shadow-xs"
                 >
                   <CalendarPlus size={13} />
