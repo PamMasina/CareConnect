@@ -111,6 +111,92 @@ export default function Home() {
   }, [searchQuery])
 
   // =========================================================================
+  // AUTHENTICATED FIRST RESPONDER VIEW (Emergencies only)
+  // =========================================================================
+  if (session && role === 'first_responder') {
+    return (
+      <div className="space-y-8">
+        {/* Responder Hero Banner */}
+        <div className="relative rounded-3xl bg-slate-900 text-white overflow-hidden p-8 sm:p-10 shadow-sm border border-slate-800">
+          <img
+            src={receptionImg}
+            alt="Cape Town Clinic Facility"
+            referrerPolicy="no-referrer"
+            className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-luminosity"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-red-950/80" />
+
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-semibold text-red-300 mb-3 border border-white/10">
+                <AlertTriangle size={14} />
+                <span>Emergency Response · {clinic}</span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                Dispatch Station: {profile?.full_name}
+              </h1>
+              <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+                Receive live distress signals with exact GPS coordinates, confirm dispatch, and coordinate handover with the nearest clinic.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                to="/sos-inbox"
+                className="px-5 py-3 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-500 transition-colors shadow-sm flex items-center gap-2"
+              >
+                <AlertTriangle size={16} />
+                <span>EMS Inbox ({activeSosCount})</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Active Dispatches */}
+        <div className="max-w-md">
+          <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Active SOS Dispatches</span>
+              <AlertTriangle size={18} className="text-red-600" />
+            </div>
+            <p className="text-4xl font-extrabold text-red-600 tabular-nums">{activeSosCount}</p>
+            <p className="text-xs text-slate-500 mt-1">Live emergency incidents</p>
+          </div>
+        </div>
+
+        {/* Emergency Portal */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Link
+            to="/sos-inbox"
+            className="p-6 rounded-2xl bg-white border border-slate-200/90 hover:border-red-500 hover:shadow-md transition-all group flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-4 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                <AlertTriangle size={24} />
+              </div>
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-lg text-slate-900">EMS Emergency Dispatch</h3>
+                {activeSosCount > 0 && (
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                    {activeSosCount} Active
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                Live distress signals with exact GPS coordinates, medical history, immediate dispatch confirmation, and responder routing.
+              </p>
+            </div>
+            <div className="mt-6 flex items-center text-xs font-bold text-red-700 group-hover:text-red-800">
+              <span>View live dispatch signals</span>
+              <ChevronRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // =========================================================================
   // AUTHENTICATED ADMIN VIEW (System control — no clinical consoles)
   // =========================================================================
   if (session && role === 'admin') {
@@ -178,9 +264,9 @@ export default function Home() {
   }
 
   // =========================================================================
-  // AUTHENTICATED STAFF VIEW (Doctor, Nurse, Paramedic)
+  // AUTHENTICATED STAFF VIEW (Doctor, Nurse)
   // =========================================================================
-  if (session && role !== 'patient') {
+  if (session && (role === 'doctor' || role === 'nurse')) {
     return (
       <div className="space-y-8">
         {/* Staff Hero Banner */}
@@ -313,24 +399,20 @@ export default function Home() {
           </Link>
 
           <Link
-            to={role === 'admin' ? '/admin' : '/clinics'}
+            to="/clinics"
             className="p-6 rounded-2xl bg-white border border-slate-200/90 hover:border-slate-400 hover:shadow-md transition-all group flex flex-col justify-between"
           >
             <div>
               <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center mb-4 group-hover:bg-slate-900 group-hover:text-white transition-colors">
                 <ShieldCheck size={24} />
               </div>
-              <h3 className="font-bold text-lg text-slate-900">
-                {role === 'admin' ? 'System Administration' : 'Cape Town Clinic Facilities'}
-              </h3>
+              <h3 className="font-bold text-lg text-slate-900">Cape Town Clinic Facilities</h3>
               <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                {role === 'admin'
-                  ? 'Configure healthcare service catalogs, staff assignments, clinic operating hours, and security permissions.'
-                  : 'Browse 20+ Cape Town CHCs, operational status, triage capacity, and facility contacts.'}
+                Browse 20+ Cape Town CHCs, operational status, triage capacity, and facility contacts.
               </p>
             </div>
             <div className="mt-6 flex items-center text-xs font-bold text-slate-700 group-hover:text-slate-900">
-              <span>{role === 'admin' ? 'Open admin controls' : 'Browse facilities'}</span>
+              <span>Browse facilities</span>
               <ChevronRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
