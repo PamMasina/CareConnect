@@ -128,14 +128,22 @@ export default function StaffAppointments() {
           return (
             <div
               key={a.id}
-              className="p-5 rounded-3xl bg-white border border-slate-200/80 hover:border-slate-300 transition-all shadow-xs space-y-3"
+              onClick={e => {
+                if ((e.target as HTMLElement).closest('button, select, textarea, input, a')) return
+                setRecord({ id: a.patient_id, name: a.patient?.full_name ?? 'Walk-in Patient' })
+              }}
+              className="p-5 rounded-3xl bg-white border border-slate-200/80 hover:border-teal-300 hover:shadow-sm transition-all shadow-xs space-y-3 cursor-pointer"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-bold text-base text-slate-900">
                       {a.patient?.full_name ?? 'Walk-in Patient'}
                     </h3>
+                    <span className="text-[10px] font-bold text-teal-700 border border-teal-200 bg-teal-50 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                      <FileText size={11} />
+                      <span>Open record</span>
+                    </span>
                     <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${statusStyles[a.status] || 'bg-slate-100 text-slate-700'}`}>
                       {a.status.replace('_', ' ')}
                     </span>
