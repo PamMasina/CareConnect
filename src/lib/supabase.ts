@@ -14,7 +14,7 @@ const hasRealConfig = Boolean(
 
 // ---------- IN-MEMORY / LOCALSTORAGE FALLBACK CLIENT ----------
 
-const STORAGE_KEY = 'careconnect_mock_db_v2'
+const STORAGE_KEY = 'careconnect_mock_db_v1'
 
 interface MockUser {
   id: string
