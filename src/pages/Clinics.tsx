@@ -56,7 +56,7 @@ export default function Clinics() {
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs text-teal-700 font-medium mb-1">
             <Building2 size={14} />
-            <span>Western Cape Health Facilities</span>
+            <span>Community Health Facilities</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
             Cape Town Clinic Directory

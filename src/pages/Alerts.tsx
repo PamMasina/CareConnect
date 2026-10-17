@@ -6,7 +6,7 @@ const INITIAL_ALERTS = [
   {
     id: 1,
     title: 'Severe Rainfall & Flash Flood Advisory',
-    body: 'The South African Weather Service has issued a weather warning for heavy rainfall and gale force winds across Cape Town and the Cape Peninsula. Residents in low-lying informal areas should take precautions.',
+    body: 'A weather warning for heavy rainfall and gale force winds has been issued across Cape Town and the Cape Peninsula. Residents in low-lying informal areas should take precautions.',
     date: '11 Oct 2026',
     category: 'Weather Warning',
     severity: 'high',
@@ -14,7 +14,7 @@ const INITIAL_ALERTS = [
   {
     id: 2,
     title: 'Seasonal Influenza (Flu) Surveillance Alert',
-    body: 'Western Cape Health officials urge vulnerable residents, elderly citizens, and parents of young children to receive annual influenza immunisations available free at local community clinics.',
+    body: 'Health officials urge vulnerable residents, elderly citizens, and parents of young children to receive annual influenza immunisations available free at local community clinics.',
     date: '10 Oct 2026',
     category: 'Public Health',
     severity: 'medium',
@@ -22,7 +22,7 @@ const INITIAL_ALERTS = [
   {
     id: 3,
     title: 'Community Heating & Fire Safety Guidance',
-    body: 'City of Cape Town Fire and Rescue Services reminds residents to exercise extreme caution when using paraffin stoves or portable heaters. Keep heaters at least 1 meter away from flammable materials.',
+    body: 'Fire and Rescue Services remind residents to exercise extreme caution when using paraffin stoves or portable heaters. Keep heaters at least 1 meter away from flammable materials.',
     date: '08 Oct 2026',
     category: 'Fire Safety',
     severity: 'medium',
@@ -30,7 +30,7 @@ const INITIAL_ALERTS = [
   {
     id: 4,
     title: 'Scheduled Electrical Maintenance in Langa',
-    body: 'Eskom and the City of Cape Town advise that scheduled maintenance work will affect parts of Langa CHC supply zone on Tuesday between 08:00 and 16:00. Facility backup generators will remain active.',
+    body: 'Scheduled maintenance work will affect parts of the Langa CHC supply zone on Tuesday between 08:00 and 16:00. Facility backup generators will remain active.',
     date: '05 Oct 2026',
     category: 'Municipal Infrastructure',
     severity: 'low',

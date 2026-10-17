@@ -84,7 +84,7 @@ export default function Login() {
 
           {/* Bottom Footer Note */}
           <div className="relative z-10 pt-6 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-            <span>Cape Town · Western Cape</span>
+            <span>Cape Town, South Africa</span>
             <span className="font-mono tabular-nums text-emerald-300">Emergency Dispatch: 10177</span>
           </div>
         </div>

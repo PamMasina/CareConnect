@@ -136,7 +136,7 @@ export default function Home() {
                 Clinical Workspace: {profile?.full_name}
               </h1>
               <p className="text-sm text-slate-300 mt-2 leading-relaxed">
-                Active clinical officer for Western Cape Public Health. Manage patient consultations, triage the live waiting room, or dispatch emergency rescue units.
+                Active clinical officer. Manage patient consultations, triage the live waiting room, or dispatch emergency rescue units.
               </p>
             </div>
 
@@ -291,7 +291,7 @@ export default function Home() {
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-semibold text-emerald-300 mb-3 border border-white/15">
               <Activity size={13} className="text-emerald-400" />
-              <span>Western Cape CareConnect · Patient Health Portal</span>
+              <span>CareConnect · Patient Health Portal</span>
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
@@ -585,7 +585,7 @@ export default function Home() {
         <div className="lg:col-span-7 space-y-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-50 border border-teal-200 text-xs font-semibold text-teal-800">
             <span className="w-2 h-2 rounded-full bg-teal-600 animate-pulse"></span>
-            <span>Western Cape Department of Health Partner Network</span>
+            <span>Community Health Partner Network</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.08] text-balance">
@@ -978,7 +978,7 @@ export default function Home() {
               Find Care Near You
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              20+ verified Western Cape Community Health Centres with real-time status.
+              20+ verified Community Health Centres with real-time status.
             </p>
           </div>
 
@@ -1038,13 +1038,13 @@ export default function Home() {
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
               <Bell size={14} />
-              <span>Official Public Health Bulletins</span>
+              <span>Public Health Bulletins</span>
             </div>
             <h3 className="text-2xl font-extrabold text-white tracking-tight">
-              City of Cape Town Health Advisories
+              Health Advisories
             </h3>
             <p className="text-xs text-slate-400 mt-1">
-              Active guidance from the Western Cape Disease Surveillance Unit.
+              Active guidance from public health surveillance updates.
             </p>
           </div>
 

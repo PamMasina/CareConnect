@@ -75,7 +75,7 @@ export default function FirstResponderInbox() {
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs text-red-700 font-bold mb-1">
             <Radio size={14} className="text-red-600 animate-pulse" />
-            <span>Western Cape Emergency Medical Services</span>
+            <span>Emergency Medical Services (EMS) Dispatch</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
             Live SOS Emergency Inbox
@@ -245,7 +245,7 @@ export default function FirstResponderInbox() {
             <CheckCircle2 size={36} className="mx-auto text-emerald-500" />
             <h3 className="font-bold text-base text-slate-900">All Emergencies Clear</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              No active or unacknowledged emergency alerts currently logged in the Western Cape dispatch buffer.
+              No active or unacknowledged emergency alerts currently logged in the EMS dispatch buffer.
             </p>
           </div>
         )}

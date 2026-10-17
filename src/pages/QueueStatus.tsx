@@ -64,7 +64,7 @@ export default function QueueStatus() {
             Live Queue Position
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            {clinicName ? `${clinicName} · ` : ''}Western Cape Health
+            {clinicName ? `${clinicName} · ` : ''}Community Health
           </p>
         </div>
 
