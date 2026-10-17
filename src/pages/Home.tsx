@@ -111,7 +111,74 @@ export default function Home() {
   }, [searchQuery])
 
   // =========================================================================
-  // AUTHENTICATED STAFF VIEW (Doctor, Nurse, Paramedic, Admin)
+  // AUTHENTICATED ADMIN VIEW (System control — no clinical consoles)
+  // =========================================================================
+  if (session && role === 'admin') {
+    return (
+      <div className="space-y-8">
+        {/* Admin Hero Banner */}
+        <div className="relative rounded-3xl bg-slate-900 text-white overflow-hidden p-8 sm:p-10 shadow-sm border border-slate-800">
+          <img
+            src={receptionImg}
+            alt="Cape Town Clinic Facility"
+            referrerPolicy="no-referrer"
+            className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-luminosity"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-teal-950/80" />
+
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-semibold text-emerald-300 mb-3 border border-white/10">
+                <ShieldCheck size={14} />
+                <span>System Administration</span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                Administration Console: {profile?.full_name}
+              </h1>
+              <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+                Manage user roles, clinical services, per-day staff rosters, and emergency dispatch oversight across every clinic.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                to="/admin"
+                className="px-5 py-3 rounded-xl bg-teal-600 text-white text-sm font-semibold hover:bg-teal-500 transition-colors shadow-sm flex items-center gap-2"
+              >
+                <ShieldCheck size={16} />
+                <span>Open System Administration</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Admin Portal */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Link
+            to="/admin"
+            className="p-6 rounded-2xl bg-white border border-slate-200/90 hover:border-slate-400 hover:shadow-md transition-all group flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center mb-4 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                <ShieldCheck size={24} />
+              </div>
+              <h3 className="font-bold text-lg text-slate-900">System Administration</h3>
+              <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                Configure healthcare service catalogs, staff assignments, clinic operating hours, and security permissions.
+              </p>
+            </div>
+            <div className="mt-6 flex items-center text-xs font-bold text-slate-700 group-hover:text-slate-900">
+              <span>Open admin controls</span>
+              <ChevronRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // =========================================================================
+  // AUTHENTICATED STAFF VIEW (Doctor, Nurse, Paramedic)
   // =========================================================================
   if (session && role !== 'patient') {
     return (
